@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">NopeDot</string>
+
+    <string name="search_note">Search note</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
