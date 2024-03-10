@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/brown"
-    tools:context=".TaskFeedFragment">
+    tools:context=".fragments.TaskFeedFragment">
 
     <SearchView
         android:id="@+id/searchView"

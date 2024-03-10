@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/noteFeedFragment"
-        android:name="com.grigroviska.nopedot.NoteFeedFragment"
+        android:name="com.grigroviska.nopedot.fragments.NoteFeedFragment"
         android:label="fragment_note_feed"
         tools:layout="@layout/fragment_note_feed" >
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/createNoteFragment"
-        android:name="com.grigroviska.nopedot.createNoteFragment"
+        android:name="com.grigroviska.nopedot.fragments.createNoteFragment"
         android:label="fragment_create_note"
         tools:layout="@layout/fragment_create_note" >
         <action

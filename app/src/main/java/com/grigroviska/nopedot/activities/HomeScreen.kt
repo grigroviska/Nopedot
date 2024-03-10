@@ -1,9 +1,10 @@
-package com.grigroviska.nopedot
+package com.grigroviska.nopedot.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
+import com.grigroviska.nopedot.ViewPagerAdapter
 import com.grigroviska.nopedot.databinding.ActivityHomeScreenBinding
 
 class HomeScreen : AppCompatActivity() {
