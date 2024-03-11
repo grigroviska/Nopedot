@@ -16,11 +16,16 @@
     </fragment>
     <fragment
         android:id="@+id/createNoteFragment"
-        android:name="com.grigroviska.nopedot.fragments.createNoteFragment"
+        android:name="com.grigroviska.nopedot.fragments.CreateNoteFragment"
         android:label="fragment_create_note"
         tools:layout="@layout/fragment_create_note" >
         <action
             android:id="@+id/action_createNoteFragment_to_noteFeedFragment"
             app:destination="@id/noteFeedFragment" />
+
+        <argument android:name="note"
+            android:defaultValue="@null"
+            app:argType="com.grigroviska.nopedot.model.Note"
+            app:nullable="true"/>
     </fragment>
 </navigation>

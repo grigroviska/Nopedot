@@ -2,54 +2,38 @@ package com.grigroviska.nopedot.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.grigroviska.nopedot.ViewPagerAdapter
 import com.grigroviska.nopedot.databinding.ActivityHomeScreenBinding
+import com.grigroviska.nopedot.db.NoteDatabase
+import com.grigroviska.nopedot.repository.NoteRepository
+import com.grigroviska.nopedot.viewModel.NoteActivityViewModel
+import com.grigroviska.nopedot.viewModel.NoteActivityViewModelFactory
 
 class HomeScreen : AppCompatActivity() {
 
+    lateinit var noteActivityViewModel: NoteActivityViewModel
     private lateinit var binding: ActivityHomeScreenBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        supportActionBar?.hide()
         binding = ActivityHomeScreenBinding.inflate(layoutInflater)
         val view = binding.root
-        setContentView(view)
 
-        val viewPager = binding.viewPager
-        val tabLayout = binding.tabLayout
+        try {
+            setContentView(view)
+            val noteRepository = NoteRepository(NoteDatabase(this))
+            val noteActivityViewModelFactory = NoteActivityViewModelFactory(noteRepository)
+            noteActivityViewModel = ViewModelProvider(this,
+                noteActivityViewModelFactory)[NoteActivityViewModel::class.java]
+        }catch (e: Exception){
 
-        val pagerAdapter = ViewPagerAdapter(supportFragmentManager, lifecycle)
+            Log.d("TAG","ERROR")
 
-        tabLayout.addTab(tabLayout.newTab().setText("Notes"))
-        tabLayout.addTab(tabLayout.newTab().setText("Tasks"))
-
-        viewPager.adapter = pagerAdapter
-
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                if (tab != null){
-                    viewPager.currentItem = tab.position
-                }
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-
-            }
-
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-
-            }
-
-
-        })
-
-        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                tabLayout.selectTab(tabLayout.getTabAt(position))
-            }
-        })
+        }
     }
 }
