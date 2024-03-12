@@ -6,7 +6,9 @@ import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
@@ -32,6 +34,7 @@ class CreateNoteFragment : Fragment(R.layout.fragment_create_note) {
     private lateinit var contentBinding: FragmentCreateNoteBinding
     private var note: Note?=null
     private var color= -1
+    private lateinit var result: String
     private val noteActivityViewModel: NoteActivityViewModel by activityViewModels()
     private val currentDate = SimpleDateFormat.getInstance().format(Date())
     private val job = CoroutineScope(Dispatchers.Main)
@@ -55,6 +58,8 @@ class CreateNoteFragment : Fragment(R.layout.fragment_create_note) {
         navController = Navigation.findNavController(view)
         val activity = activity as HomeScreen
 
+        contentBinding.lastEdited.text = getString(R.string.edited_on, SimpleDateFormat.getDateInstance().format(Date()))
+
         contentBinding.backButton.setOnClickListener {
             requireView().hideKeyboard()
             navController.popBackStack()
@@ -62,61 +67,61 @@ class CreateNoteFragment : Fragment(R.layout.fragment_create_note) {
 
         contentBinding.saveNote.setOnClickListener {
             saveNote()
+        }
 
-            try {
-                contentBinding.etNoteContent.setOnFocusChangeListener { _, hasFocus ->
-                    if (hasFocus){
+        try {
+            contentBinding.etNoteContent.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus){
 
-                        contentBinding.bottomBar.visibility = View.VISIBLE
-                        contentBinding.etNoteContent.setStylesBar(contentBinding.styleBar)
+                    contentBinding.bottomBar.visibility = View.VISIBLE
+                    contentBinding.etNoteContent.setStylesBar(contentBinding.styleBar)
 
-                    }else contentBinding.bottomBar.visibility = View.GONE
-                }
-            }catch (e : Throwable){
+                }else contentBinding.bottomBar.visibility = View.GONE
+            }
+        }catch (e : Throwable){
 
-                Log.d("TAG", e.stackTraceToString())
+            Log.d("TAG", e.stackTraceToString())
+
+        }
+
+        contentBinding.chooseColorMode.setOnClickListener{
+
+            val bottomSheetDialog = BottomSheetDialog(
+                requireContext(),
+                R.style.BottomSheetDialogTheme
+            )
+            val bottomSheetView: View =layoutInflater.inflate(
+                R.layout.bottom_sheet_layout,
+                null
+            )
+
+            with(bottomSheetDialog){
+
+                setContentView(bottomSheetView)
+                show()
 
             }
 
-            contentBinding.chooseColorMode.setOnClickListener{
-
-                val bottomSheetDialog = BottomSheetDialog(
-                    requireContext(),
-                    R.style.BottomSheetDialogTheme
-                )
-                val bottomSheetView: View =layoutInflater.inflate(
-                    R.layout.bottom_sheet_layout,
-                    null
-                )
-
-                with(bottomSheetDialog){
-
-                    setContentView(bottomSheetView)
-                    show()
-
-                }
-
-                val bottomSheetBinding = BottomSheetLayoutBinding.bind(bottomSheetView)
-                bottomSheetBinding.apply {
-                    colorPicker.apply {
-                        setSelectedColor(color)
-                        setOnColorSelectedListener {
+            val bottomSheetBinding = BottomSheetLayoutBinding.bind(bottomSheetView)
+            bottomSheetBinding.apply {
+                colorPicker.apply {
+                    setSelectedColor(color)
+                    setOnColorSelectedListener {
                             value ->
-                            color = value
-                            contentBinding.apply {
-                                noteContentFragmentParent.setBackgroundColor(color)
-                                toolbarFragmentNoteContent.setBackgroundColor(color)
-                                bottomBar.setBackgroundColor(color)
-                                activity.window.statusBarColor= color
-                            }
-                            bottomSheetBinding.bottomSheetParent.setCardBackgroundColor(color)
+                        color = value
+                        contentBinding.apply {
+                            noteContentFragmentParent.setBackgroundColor(color)
+                            toolbarFragmentNoteContent.setBackgroundColor(color)
+                            bottomBar.setBackgroundColor(color)
+                            activity.window.statusBarColor= color
                         }
+                        bottomSheetBinding.bottomSheetParent.setCardBackgroundColor(color)
                     }
-                    bottomSheetParent.setCardBackgroundColor(color)
                 }
-                bottomSheetView.post {
-                    bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                }
+                bottomSheetParent.setCardBackgroundColor(color)
+            }
+            bottomSheetView.post {
+                bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
             }
         }
     }
@@ -136,6 +141,12 @@ class CreateNoteFragment : Fragment(R.layout.fragment_create_note) {
                             currentDate,
                             color
                         )
+                    )
+
+                    result = "Note Saved"
+                    setFragmentResult(
+                        "key",
+                        bundleOf("bundleKey" to result)
                     )
                     navController.navigate(R.id.action_createNoteFragment_to_noteFeedFragment)
                 }

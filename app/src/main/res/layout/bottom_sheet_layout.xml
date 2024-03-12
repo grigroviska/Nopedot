@@ -16,6 +16,7 @@
             android:layout_height="match_parent"
             android:id="@+id/bottomSheetContainer">
 
+
             <ImageView
                 android:layout_width="40dp"
                 android:layout_height="6dp"
