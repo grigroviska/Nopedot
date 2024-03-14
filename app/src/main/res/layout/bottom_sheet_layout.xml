@@ -9,6 +9,7 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@color/sBrown"
         android:id="@+id/bottomSheetParent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -34,8 +35,11 @@
                 android:layout_height="wrap_content"
                 android:drawableStart="@drawable/choose_color"
                 android:drawablePadding="10dp"
+                android:textColor="@color/white"
                 android:text="@string/choose_color"
                 android:textSize="18sp"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/bar" />
@@ -46,6 +50,7 @@
                 android:scrollbars="none"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                android:paddingBottom="20dp"
                 app:layout_constraintTop_toBottomOf="@id/addColorText">
 
                 <com.thebluealliance.spectrum.SpectrumPalette
@@ -55,6 +60,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     app:spectrum_autoPadding="true"
+                    android:layout_marginStart="10dp"
                     app:spectrum_colors="@array/color_picker"
                     app:spectrum_columnCount="16"
                     app:spectrum_outlineWidth="0.1dp" />

@@ -4,6 +4,7 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="brown">#1a110e</color>
+    <color name="sBrown">#4d3229</color>
     <color name="ivoryWhite">#fff9c4</color>
 
 
@@ -26,7 +27,7 @@
 
 
     <array name="color_picker">
-        <item>@color/white</item>
+        <item>@color/sBrown</item>
         <item>@color/card_purple</item>
         <item>@color/card_yellow</item>
         <item>@color/card_red</item>

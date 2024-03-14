@@ -4,13 +4,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textview.MaterialTextView
 import com.grigroviska.nopedot.R
 import com.grigroviska.nopedot.databinding.NoteItemLayoutBinding
+import com.grigroviska.nopedot.fragments.NoteFeedFragmentDirections
 import com.grigroviska.nopedot.model.Note
+import com.grigroviska.nopedot.utils.hideKeyboard
 import io.noties.markwon.AbstractMarkwonPlugin
 import io.noties.markwon.Markwon
 import io.noties.markwon.MarkwonVisitor
@@ -35,7 +39,7 @@ class RvNotesAdapter: ListAdapter<Note, RvNotesAdapter.NotesViewHolder>(DiffUtil
                     super.configureVisitor(builder)
                     builder.on(
                         SoftLineBreak::class.java
-                    ){visitor, _, -> visitor.forceNewLine()}
+                    ){visitor, _ -> visitor.forceNewLine()}
                 }
             })
             .build()
@@ -58,9 +62,18 @@ class RvNotesAdapter: ListAdapter<Note, RvNotesAdapter.NotesViewHolder>(DiffUtil
 
                 itemView.setOnClickListener {
 
+                    /*val action = NoteFeedFragmentDirections.actionNoteFeedFragmentToCreateNoteFragment()
+                        .setNote(note)
+                    val extras = FragmentNavigatorExtras(parent to "recyclerView_${note.id}")
+                    it.hideKeyboard()
+                    Navigation.findNavController(it).navigate(action, extras)*/
                 }
                 content.setOnClickListener {
-
+                    /*val action = NoteFeedFragmentDirections.actionNoteFeedFragmentToCreateNoteFragment()
+                        .setNote(note)
+                    val extras = FragmentNavigatorExtras(parent to "recyclerView_${note.id}")
+                    it.hideKeyboard()
+                    Navigation.findNavController(it).navigate(action, extras)*/
                 }
 
             }
