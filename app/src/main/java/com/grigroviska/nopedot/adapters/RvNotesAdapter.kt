@@ -65,19 +65,17 @@ class RvNotesAdapter: ListAdapter<Note, RvNotesAdapter.NotesViewHolder>(DiffUtil
                 aParent.setBackgroundColor(note.color)
                 itemView.setOnClickListener {
 
-                    /*val action = NoteFeedFragmentDirections.actionNoteFeedFragmentToCreateNoteFragment()
-                        .setNote(note)
+                    val action = NoteFeedFragmentDirections.actionNoteFeedFragmentToCreateNoteFragment(note)
                     val extras = FragmentNavigatorExtras(parent to "recyclerView_${note.id}")
                     it.hideKeyboard()
-                    Navigation.findNavController(it).navigate(action, extras)*/
+                    Navigation.findNavController(it).navigate(action, extras)
 
                 }
                 content.setOnClickListener {
-                    /*val action = NoteFeedFragmentDirections.actionNoteFeedFragmentToCreateNoteFragment()
-                        .setNote(note)
+                    val action = NoteFeedFragmentDirections.actionNoteFeedFragmentToCreateNoteFragment(note)
                     val extras = FragmentNavigatorExtras(parent to "recyclerView_${note.id}")
                     it.hideKeyboard()
-                    Navigation.findNavController(it).navigate(action, extras)*/
+                    Navigation.findNavController(it).navigate(action, extras)
                 }
 
             }

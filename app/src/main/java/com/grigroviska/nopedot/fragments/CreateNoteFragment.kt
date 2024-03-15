@@ -1,10 +1,13 @@
 package com.grigroviska.nopedot.fragments
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
@@ -92,6 +95,11 @@ class CreateNoteFragment : Fragment(R.layout.fragment_create_note) {
 
         }
 
+        contentBinding.shareNote.setOnClickListener {
+
+        }
+
+
         contentBinding.chooseColorMode.setOnClickListener{
 
             val bottomSheetDialog = BottomSheetDialog(
@@ -152,10 +160,10 @@ class CreateNoteFragment : Fragment(R.layout.fragment_create_note) {
             contentBinding.apply {
                 job.launch {
                     delay(10)
-                    noteContentFragmentParent.setBackgroundColor(color)
+                    noteContentFragmentParent.setBackgroundColor(note.color)
                 }
-                toolbarFragmentNoteContent.setBackgroundColor(color)
-                bottomBar.setBackgroundColor(color)
+                toolbarFragmentNoteContent.setBackgroundColor(note.color)
+                bottomBar.setBackgroundColor(note.color)
             }
             activity?.window?.statusBarColor = note.color
         }
