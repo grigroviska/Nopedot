@@ -3,6 +3,7 @@ package com.grigroviska.nopedot.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -31,6 +32,7 @@ class RvNotesAdapter: ListAdapter<Note, RvNotesAdapter.NotesViewHolder>(DiffUtil
         val content: TextView = contentBinding.noteContentItem
         val date : MaterialTextView = contentBinding.noteItemDate
         val parent: MaterialCardView = contentBinding.noteItemLayoutParent
+        val aParent: RelativeLayout = contentBinding.textBackground
         val markWon = Markwon.builder(itemView.context)
             .usePlugin(StrikethroughPlugin.create())
             .usePlugin(TaskListPlugin.create(itemView.context))
@@ -55,11 +57,12 @@ class RvNotesAdapter: ListAdapter<Note, RvNotesAdapter.NotesViewHolder>(DiffUtil
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
         getItem(position).let { note ->
             holder.apply {
+                parent.transitionName="recyclerView_${note.id}"
                 title.text = note.title
                 markWon.setMarkdown(content, note.content)
                 date.text= note.date
-                parent.setBackgroundColor(note.color)
-
+                //parent.setBackgroundColor(note.color)
+                aParent.setBackgroundColor(note.color)
                 itemView.setOnClickListener {
 
                     /*val action = NoteFeedFragmentDirections.actionNoteFeedFragmentToCreateNoteFragment()
@@ -67,6 +70,7 @@ class RvNotesAdapter: ListAdapter<Note, RvNotesAdapter.NotesViewHolder>(DiffUtil
                     val extras = FragmentNavigatorExtras(parent to "recyclerView_${note.id}")
                     it.hideKeyboard()
                     Navigation.findNavController(it).navigate(action, extras)*/
+
                 }
                 content.setOnClickListener {
                     /*val action = NoteFeedFragmentDirections.actionNoteFeedFragmentToCreateNoteFragment()

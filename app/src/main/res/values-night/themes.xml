@@ -3,6 +3,7 @@
     <style name="Base.Theme.NopeDot" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <item name="android:statusBarColor">@color/brown</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
 

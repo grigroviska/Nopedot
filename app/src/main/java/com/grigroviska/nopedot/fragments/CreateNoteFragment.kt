@@ -11,6 +11,7 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.NavController
+import androidx.navigation.NavDirections
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -36,7 +37,8 @@ class CreateNoteFragment : Fragment(R.layout.fragment_create_note) {
     private lateinit var navController : NavController
     private lateinit var contentBinding: FragmentCreateNoteBinding
     private var note: Note?=null
-    private var color = Color.parseColor("#4d3229")
+    private var sNote : Note?=null
+    private var color = Color.parseColor("#090605")
     private lateinit var result: String
     private val noteActivityViewModel: NoteActivityViewModel by activityViewModels()
     private val currentDate = SimpleDateFormat.getInstance().format(Date())
@@ -181,7 +183,7 @@ class CreateNoteFragment : Fragment(R.layout.fragment_create_note) {
                         "key",
                         bundleOf("bundleKey" to result)
                     )
-                    navController.navigate(R.id.action_createNoteFragment_to_noteFeedFragment)
+                    requireView().hideKeyboard()
                 }
                 else -> {
                     updateNote()

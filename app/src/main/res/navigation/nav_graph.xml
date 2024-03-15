@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_note_feed" >
         <action
             android:id="@+id/action_noteFeedFragment_to_createNoteFragment"
-            app:destination="@id/createNoteFragment" />
+            app:destination="@id/createNoteFragment"/>
     </fragment>
     <fragment
         android:id="@+id/createNoteFragment"

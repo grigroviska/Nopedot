@@ -3,7 +3,10 @@
     <style name="Base.Theme.NopeDot" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <item name="android:statusBarColor">@color/brown</item>
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="colorPrimary">@color/brown</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
     </style>
 
     <style name="Theme.NopeDot" parent="Base.Theme.NopeDot" />
