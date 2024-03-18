@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.NopeDot" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.NopeDot" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <item name="android:statusBarColor">@color/brown</item>
         <item name="android:textColor">@color/white</item>
@@ -9,7 +9,6 @@
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
     </style>
 
-    <style name="Theme.NopeDot" parent="Base.Theme.NopeDot" />
 
     <style name="RoundedShape">
         <item name="cornerFamily">rounded</item>

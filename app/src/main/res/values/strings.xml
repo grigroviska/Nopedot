@@ -14,4 +14,7 @@
     <string name="search_task">Search for tasks</string>
     <string name="note">Note</string>
     <string name="note_title">Note Title</string>
+    <string name="this_is_an_sample_task_inside_the_application">This is an Sample Task inside the application.</string>
+    <string name="new_task">New Task</string>
+    <string name="save">Save</string>
 </resources>
