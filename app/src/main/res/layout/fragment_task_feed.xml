@@ -10,12 +10,35 @@
     <SearchView
         android:id="@+id/searchView"
         android:layout_width="340dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_marginTop="15dp"
+        android:queryBackground="@null"
         android:background="@drawable/rounded_searchview_background"
+        android:drawablePadding="5dp"
+        android:importantForAutofill="no"
+        android:textColor="@color/brown"
+        android:textColorHint="@color/brown"
+        android:iconifiedByDefault="false"
+        android:drawableStart="@drawable/search"
         android:queryHint="@string/search_task"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:backgroundTint="@color/ivoryWhite"
+        android:tint="@color/brown"
+        android:src="@drawable/add_icon"
+        android:elevation="0dp"
+        app:fabSize="normal"
+        app:borderWidth="0dp"
+        app:useCompatPadding="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:shapeAppearance="@style/RoundedShape" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.grigroviska.nopedot.R
 import com.grigroviska.nopedot.databinding.ActivityHomeScreenBinding
@@ -24,23 +25,50 @@ class HomeScreen : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        supportActionBar?.hide()
-
+        binding = ActivityHomeScreenBinding.inflate(layoutInflater)
+        val view = binding.root
 
         try {
-            binding = ActivityHomeScreenBinding.inflate(layoutInflater)
-            val view = binding.root
             setContentView(view)
             val noteRepository = NoteRepository(NoteDatabase(this))
             val noteActivityViewModelFactory = NoteActivityViewModelFactory(noteRepository)
             noteActivityViewModel = ViewModelProvider(this,
                 noteActivityViewModelFactory)[NoteActivityViewModel::class.java]
 
+            try {
+                val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment
+                val navController = navHostFragment.navController
+
+                binding.noteList.setOnClickListener {
+                    val currentDestination = navController.currentDestination?.id
+                    if (currentDestination != R.id.noteFeedFragment) {
+                        navController.navigate(R.id.noteFeedFragment)
+                    }else{
+
+                    }
+                }
+
+                binding.taskList.setOnClickListener {
+                    val currentDestination = navController.currentDestination?.id
+                    if (currentDestination != R.id.taskFeedFragment) {
+                        navController.navigate(R.id.taskFeedFragment)
+                    }else{
+
+                    }
+                }
+            }catch (e: Exception){
+
+                System.out.println(e.stackTraceToString() + e.localizedMessage.toString() + e.stackTrace.toString())
+
+            }
+
+
         }catch (e: Exception){
 
-            Log.d("TAG","ERROR")
+            System.out.println(e.stackTraceToString() + e.localizedMessage)
 
         }
+
 
     }
 }

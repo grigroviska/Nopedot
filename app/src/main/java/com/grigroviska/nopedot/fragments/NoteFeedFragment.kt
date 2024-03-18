@@ -3,11 +3,9 @@ package com.grigroviska.nopedot.fragments
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.view.WindowManager
-import android.view.inputmethod.EditorInfo
+import android.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -70,41 +68,36 @@ class NoteFeedFragment : Fragment(R.layout.fragment_note_feed) {
 
         swipeToDelete(binding.rvNote)
 
-        binding.searchView.addTextChangedListener(object : TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                binding.noData.isVisible = false
-            }
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if(s.toString().isNotEmpty()){
-                    val text = s.toString()
-                    val query="%$text"
-                    if (query.isNotEmpty()){
-                        noteActivityViewModel.searchNote(query).observe(viewLifecycleOwner){
-                            rvAdapter.submitList(it)
-                        }
-                    }else{
-                        observerDataChanges()
+                if (!query.isNullOrEmpty()) {
+                    val searchText = "%$query"
+                    noteActivityViewModel.searchNote(searchText).observe(viewLifecycleOwner) { notes ->
+                        rvAdapter.submitList(notes)
                     }
-                }else{
+                } else {
                     observerDataChanges()
                 }
+                return true
             }
 
-            override fun afterTextChanged(s: Editable?) {
-
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText.isNullOrEmpty()) {
+                    observerDataChanges()
+                } else {
+                    val searchText = "%$newText"
+                    noteActivityViewModel.searchNote(searchText).observe(viewLifecycleOwner) { notes ->
+                        rvAdapter.submitList(notes)}
+                }
+                return true
             }
-
         })
 
-        binding.searchView.setOnEditorActionListener{v, actionId, _ ->
-            if (actionId== EditorInfo.IME_ACTION_SEARCH){
-                v.clearFocus()
-                requireView().hideKeyboard()
-            }
-            return@setOnEditorActionListener true
+        binding.searchView.setOnSearchClickListener {
+            requireView().hideKeyboard()
         }
-
     }
 
     private fun swipeToDelete(rvNote: RecyclerView) {
@@ -119,7 +112,7 @@ class NoteFeedFragment : Fragment(R.layout.fragment_note_feed) {
                     hideKeyboard()
                     clearFocus()
                 }
-                if (binding.searchView.text.toString().isEmpty()){
+                if (binding.searchView.toString().isEmpty()){
                     observerDataChanges()
 
                 }

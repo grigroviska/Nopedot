@@ -13,16 +13,18 @@
         android:background="@color/brown"
         tools:context=".fragments.NoteFeedFragment">
 
-        <EditText
+        <SearchView
             android:id="@+id/searchView"
             android:layout_width="340dp"
             android:layout_height="50dp"
             android:layout_marginTop="15dp"
+            android:queryBackground="@null"
             android:background="@drawable/rounded_searchview_background"
             android:drawablePadding="5dp"
             android:importantForAutofill="no"
-            android:inputType="textFilter"
-            android:imeOptions="actionSearch"
+            android:textColor="@color/brown"
+            android:textColorHint="@color/brown"
+            android:iconifiedByDefault="false"
             android:drawableStart="@drawable/search"
             android:queryHint="@string/search_note"
             app:layout_constraintEnd_toEndOf="parent"
@@ -35,6 +37,7 @@
             android:layout_height="0dp"
             android:clipToPadding="false"
             android:paddingStart="6dp"
+            android:paddingTop="10dp"
             android:paddingBottom="5dp"
             android:transitionGroup="true"
             tools:listitem="@layout/note_item_layout"
