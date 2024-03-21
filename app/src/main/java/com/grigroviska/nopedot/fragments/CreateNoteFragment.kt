@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
@@ -41,7 +42,7 @@ class CreateNoteFragment : Fragment(R.layout.fragment_create_note) {
     private lateinit var contentBinding: FragmentCreateNoteBinding
     private var note: Note?=null
     private var sNote : Note?=null
-    private var color = Color.parseColor("#090605")
+    private var color = Color.parseColor("#2a2a2a")
     private lateinit var result: String
     private val noteActivityViewModel: NoteActivityViewModel by activityViewModels()
     private val currentDate = SimpleDateFormat.getInstance().format(Date())
@@ -71,8 +72,21 @@ class CreateNoteFragment : Fragment(R.layout.fragment_create_note) {
             "recyclerView_${args.note?.id}"
         )
 
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (contentBinding.etNoteContent.isFocused) {
+                    requireView().hideKeyboard()
+                } else {
+                    //activity.window?.statusBarColor = color
+                    isEnabled = false
+                    navController.popBackStack()
+                }
+            }
+        })
+
         contentBinding.backButton.setOnClickListener {
             requireView().hideKeyboard()
+            //activity.window.statusBarColor= color
             navController.popBackStack()
         }
 
@@ -129,7 +143,7 @@ class CreateNoteFragment : Fragment(R.layout.fragment_create_note) {
                             noteContentFragmentParent.setBackgroundColor(color)
                             toolbarFragmentNoteContent.setBackgroundColor(color)
                             bottomBar.setBackgroundColor(color)
-                            activity.window.statusBarColor= color
+                            //activity.window.statusBarColor= color
                         }
                     }
                 }
@@ -165,7 +179,7 @@ class CreateNoteFragment : Fragment(R.layout.fragment_create_note) {
                 toolbarFragmentNoteContent.setBackgroundColor(note.color)
                 bottomBar.setBackgroundColor(note.color)
             }
-            activity?.window?.statusBarColor = note.color
+            //activity?.window?.statusBarColor = note.color
         }
     }
 

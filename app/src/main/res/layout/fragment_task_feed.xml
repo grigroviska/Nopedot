@@ -1,76 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/brown"
-    tools:context=".fragments.TaskFeedFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <SearchView
-        android:id="@+id/searchView"
-        android:layout_width="340dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="15dp"
-        android:queryBackground="@null"
-        android:background="@drawable/rounded_searchview_background"
-        android:drawablePadding="5dp"
-        android:importantForAutofill="no"
-        android:textColor="@color/brown"
-        android:textColorHint="@color/brown"
-        android:iconifiedByDefault="false"
-        android:drawableStart="@drawable/search"
-        android:queryHint="@string/search_task"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+    <data>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvNote"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:paddingStart="6dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="5dp"
-        android:transitionGroup="true"
-        tools:listitem="@layout/task_item_layout"
-        app:layout_manager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchView" />
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/backgroundColor"
+        tools:context=".fragments.TaskFeedFragment">
 
-        <ImageView
-            android:id="@+id/noData"
+        <SearchView
+            android:id="@+id/searchView"
+            android:layout_width="340dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="15dp"
+            android:queryBackground="@null"
+            android:background="@drawable/rounded_searchview_background"
+            android:drawablePadding="5dp"
+            android:importantForAutofill="no"
+            android:textColor="@color/backgroundColor"
+            android:textColorHint="@color/backgroundColor"
+            android:iconifiedByDefault="false"
+            android:drawableStart="@drawable/search"
+            android:queryHint="@string/search_task"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvNote"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:src="@drawable/no_data"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:paddingStart="6dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="5dp"
+            android:transitionGroup="true"
+            tools:listitem="@layout/subject_layout"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:visibility="gone"/>
+            app:layout_constraintTop_toBottomOf="@+id/searchView"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/noData"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:src="@drawable/no_data"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:visibility="gone" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:backgroundTint="@color/secondaryColor"
+            android:tint="@color/backgroundColor"
+            android:src="@drawable/add_icon"
+            android:elevation="0dp"
+            app:fabSize="normal"
+            app:borderWidth="0dp"
+            app:useCompatPadding="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:shapeAppearance="@style/RoundedShape" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:backgroundTint="@color/ivoryWhite"
-        android:tint="@color/brown"
-        android:src="@drawable/add_icon"
-        android:elevation="0dp"
-        app:fabSize="normal"
-        app:borderWidth="0dp"
-        app:useCompatPadding="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:shapeAppearance="@style/RoundedShape" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

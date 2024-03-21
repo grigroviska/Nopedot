@@ -58,14 +58,14 @@ class HomeScreen : AppCompatActivity() {
                 }
             }catch (e: Exception){
 
-                System.out.println(e.stackTraceToString() + e.localizedMessage.toString() + e.stackTrace.toString())
+                Toast.makeText(this,e.localizedMessage, Toast.LENGTH_SHORT).show()
 
             }
 
 
         }catch (e: Exception){
 
-            System.out.println(e.stackTraceToString() + e.localizedMessage)
+            Toast.makeText(this,e.localizedMessage, Toast.LENGTH_SHORT).show()
 
         }
 

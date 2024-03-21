@@ -9,7 +9,7 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/sBrown"
+        android:background="@color/primaryColor"
         android:id="@+id/bottomSheetParent">
 
         <androidx.constraintlayout.widget.ConstraintLayout

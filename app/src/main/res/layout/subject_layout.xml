@@ -13,13 +13,23 @@
         android:layout_height="wrap_content"
         android:padding="8dp">
 
-        <CheckBox
-            android:id="@+id/taskCheckBox"
+        <ImageView
+            android:id="@+id/listIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/check"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:paddingEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/taskTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/this_is_an_sample_task_inside_the_application"
-            android:paddingStart="8dp"
-            android:buttonTint="@color/secondaryColor"/>
+            android:layout_toEndOf="@id/listIcon"
+            android:layout_centerVertical="true"
+            android:paddingStart="8dp"/>
 
     </RelativeLayout>
 

@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/brown"
+        android:background="@color/backgroundColor"
         tools:context=".fragments.NoteFeedFragment">
 
         <SearchView
@@ -22,8 +22,8 @@
             android:background="@drawable/rounded_searchview_background"
             android:drawablePadding="5dp"
             android:importantForAutofill="no"
-            android:textColor="@color/brown"
-            android:textColorHint="@color/brown"
+            android:textColor="@color/backgroundColor"
+            android:textColorHint="@color/backgroundColor"
             android:iconifiedByDefault="false"
             android:drawableStart="@drawable/search"
             android:queryHint="@string/search_note"
@@ -67,8 +67,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:backgroundTint="@color/ivoryWhite"
-            android:tint="@color/brown"
+            android:backgroundTint="@color/secondaryColor"
+            android:tint="@color/backgroundColor"
             android:src="@drawable/add_icon"
             android:elevation="0dp"
             app:fabSize="normal"

@@ -56,7 +56,6 @@ class NoteFeedFragment : Fragment(R.layout.fragment_note_feed) {
         requireView().hideKeyboard()
         CoroutineScope(Dispatchers.Main).launch {
             delay(10)
-            activity?.window?.statusBarColor = Color.parseColor("#1a110e")
             activity.window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         }
 

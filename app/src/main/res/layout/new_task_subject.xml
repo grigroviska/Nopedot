@@ -10,17 +10,17 @@
         android:layout_height="match_parent">
 
         <EditText
-            android:id="@+id/newTask"
+            android:id="@+id/newTaskSubject"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@null"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:hint="@string/new_task" />
+            android:hint="@string/new_task_subject" />
 
         <com.google.android.material.button.MaterialButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/newTask"
+            android:layout_below="@+id/newTaskSubject"
             android:layout_alignParentEnd="true"
             android:textSize="16sp"
             android:text="@string/save"

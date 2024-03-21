@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.MainActivity"
-    android:background="@color/brown">
+    android:background="@color/backgroundColor">
 
     <ImageView
         android:id="@+id/logo"
@@ -21,8 +21,8 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Powered by"
-        android:textColor="@color/ivoryWhite"
+        android:text="Created by"
+        android:textColor="@color/secondaryColor"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@id/developerName"
         app:layout_constraintEnd_toEndOf="parent"
@@ -32,9 +32,9 @@
         android:id="@+id/developerName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="20dp"
         android:text="Grigroviska"
-        android:textColor="@color/ivoryWhite"
+        android:textColor="@color/secondaryColor"
         android:textSize="26sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

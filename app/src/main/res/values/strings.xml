@@ -17,4 +17,5 @@
     <string name="this_is_an_sample_task_inside_the_application">This is an Sample Task inside the application.</string>
     <string name="new_task">New Task</string>
     <string name="save">Save</string>
+    <string name="new_task_subject">New Task Subject</string>
 </resources>
