@@ -39,12 +39,14 @@ android {
 
     buildFeatures {
         dataBinding = true
+        viewBinding = true
     }
 }
 
 dependencies {
 
     implementation("com.google.android.material:material:1.11.0")
+    implementation("androidx.activity:activity:1.8.0")
     val lifecycle_version = "2.7.0"
     val room_version = "2.6.1"
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")

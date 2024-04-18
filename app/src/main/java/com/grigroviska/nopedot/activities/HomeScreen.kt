@@ -3,6 +3,7 @@ package com.grigroviska.nopedot.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
@@ -39,7 +40,15 @@ class HomeScreen : AppCompatActivity() {
                 val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment
                 val navController = navHostFragment.navController
 
-                binding.noteList.setOnClickListener {
+                navController.addOnDestinationChangedListener { _, destination, _ ->
+                    if (destination.id == R.id.createNoteFragment) {
+                        binding.topBar.visibility = View.GONE
+                    } else {
+                        binding.topBar.visibility = View.VISIBLE
+                    }
+                }
+
+                        binding.noteList.setOnClickListener {
                     val currentDestination = navController.currentDestination?.id
                     if (currentDestination != R.id.noteFeedFragment) {
                         navController.navigate(R.id.noteFeedFragment)
