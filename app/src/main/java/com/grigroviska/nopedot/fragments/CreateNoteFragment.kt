@@ -1,13 +1,10 @@
 package com.grigroviska.nopedot.fragments
 
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
@@ -15,7 +12,6 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.NavController
-import androidx.navigation.NavDirections
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -41,7 +37,7 @@ class CreateNoteFragment : Fragment(R.layout.fragment_create_note) {
     private lateinit var navController : NavController
     private lateinit var contentBinding: FragmentCreateNoteBinding
     private var note: Note?=null
-    private var sNote : Note?=null
+    //private var sNote : Note?=null
     private var color = Color.parseColor("#2a2a2a")
     private lateinit var result: String
     private val noteActivityViewModel: NoteActivityViewModel by activityViewModels()

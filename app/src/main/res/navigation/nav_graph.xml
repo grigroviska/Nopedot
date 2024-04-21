@@ -39,5 +39,22 @@
         <action
             android:id="@+id/action_taskFeedFragment_to_noteFeedFragment"
             app:destination="@id/noteFeedFragment" />
+        <action
+            android:id="@+id/action_taskFeedFragment_to_createTaskFragment"
+            app:destination="@id/createTaskFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createTaskFragment"
+        android:name="com.grigroviska.nopedot.fragments.CreateTaskFragment"
+        android:label="fragment_create_task"
+        tools:layout="@layout/fragment_create_task" >
+        <action
+            android:id="@+id/action_createTaskFragment_to_taskFeedFragment"
+            app:destination="@id/taskFeedFragment" />
+
+        <argument android:name="task"
+            android:defaultValue="@null"
+            app:argType="com.grigroviska.nopedot.model.Task"
+            app:nullable="true"/>
     </fragment>
 </navigation>

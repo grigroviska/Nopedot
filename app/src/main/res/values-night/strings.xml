@@ -19,5 +19,6 @@
     <string name="new_task">New Task</string>
     <string name="save">Save</string>
     <string name="new_task_subject">New Task Subject</string>
+    <string name="no_category">No Category</string>
 
 </resources>

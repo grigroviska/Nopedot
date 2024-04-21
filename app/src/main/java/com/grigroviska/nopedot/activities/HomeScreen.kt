@@ -15,13 +15,18 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.grigroviska.nopedot.R
 import com.grigroviska.nopedot.databinding.ActivityHomeScreenBinding
 import com.grigroviska.nopedot.db.NoteDatabase
+import com.grigroviska.nopedot.db.TaskDatabase
 import com.grigroviska.nopedot.repository.NoteRepository
+import com.grigroviska.nopedot.repository.TaskRepository
 import com.grigroviska.nopedot.viewModel.NoteActivityViewModel
 import com.grigroviska.nopedot.viewModel.NoteActivityViewModelFactory
+import com.grigroviska.nopedot.viewModel.TaskActivityViewModel
+import com.grigroviska.nopedot.viewModel.TaskActivityViewModelFactory
 
 class HomeScreen : AppCompatActivity() {
 
     lateinit var noteActivityViewModel: NoteActivityViewModel
+    lateinit var taskActivityViewModel: TaskActivityViewModel
     private lateinit var binding: ActivityHomeScreenBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,9 +37,13 @@ class HomeScreen : AppCompatActivity() {
         try {
             setContentView(view)
             val noteRepository = NoteRepository(NoteDatabase(this))
+            val taskRepository = TaskRepository(TaskDatabase(this))
             val noteActivityViewModelFactory = NoteActivityViewModelFactory(noteRepository)
+            val taskActivityViewModelFactory = TaskActivityViewModelFactory(taskRepository)
             noteActivityViewModel = ViewModelProvider(this,
                 noteActivityViewModelFactory)[NoteActivityViewModel::class.java]
+            taskActivityViewModel = ViewModelProvider(this,
+                taskActivityViewModelFactory)[TaskActivityViewModel::class.java]
 
             try {
                 val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment

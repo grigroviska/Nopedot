@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -7,26 +8,102 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/backgroundColor"
+        android:padding="20dp">
 
         <EditText
             android:id="@+id/newTask"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@null"
+            android:layout_height="30dp"
+            android:padding="5dp"
+            android:background="@color/primaryColor"
+            android:textColor="@color/secondaryColor"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:hint="@string/new_task" />
 
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/taskContainer"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/newTask"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/newTask"
-            android:layout_alignParentEnd="true"
-            android:textSize="16sp"
-            android:text="@string/save"
-            android:textAllCaps="false"
-            android:background="@android:color/transparent"
-            android:textColor="@color/backgroundColor" />
+            android:layout_width="match_parent"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/taskContainer"
+            android:layout_marginTop="10dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/category"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:textColor="@color/secondaryColor"
+                android:textSize="9sp"
+                android:layout_centerVertical="true"
+                android:text="@string/no_category"/>
+
+
+
+            <RelativeLayout
+                android:id="@+id/calendarLayout"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/category">
+
+                <ImageView
+                    android:id="@+id/calendar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="@null"
+                    android:src="@drawable/calendar"
+                    android:layout_marginStart="10dp"
+                    />
+
+                <TextView
+                    android:id="@+id/calendarText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/calendar"
+                    android:layout_alignEnd="@id/calendar"
+                    android:layout_alignStart="@id/calendar"
+                    android:layout_alignBottom="@id/calendar"
+                    android:padding="6dp"
+                    android:text="1"
+                    android:textColor="@color/secondaryColor"
+                    android:textSize="10sp" />
+
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/branch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:src="@drawable/branch"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@id/calendarLayout"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/saveTask"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:textSize="16sp"
+                android:text="@string/save"
+                android:textAllCaps="false"
+                android:background="@android:color/transparent"
+                android:textColor="@color/secondaryColor" />
+
+        </RelativeLayout>
 
     </RelativeLayout>
 </layout>
