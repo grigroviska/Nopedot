@@ -20,5 +20,8 @@
     <string name="save">Save</string>
     <string name="new_task_subject">New Task Subject</string>
     <string name="no_category">No Category</string>
+    <string name="due_date">Due Date</string>
+    <string name="_10_11_1938">10/11/1938</string>
+    <string name="no">No</string>
 
 </resources>

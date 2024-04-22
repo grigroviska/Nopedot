@@ -85,6 +85,21 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
+                    <com.google.android.material.button.MaterialButton
+                        xmlns:android="http://schemas.android.com/apk/res/android"
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/filledTonalButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/no_category"
+                        android:textColor="@android:color/white"
+                        android:layout_marginStart="20dp"
+                        android:backgroundTint="@color/primaryColor"
+                        android:textAllCaps="false"
+                        app:cornerRadius="4dp"
+                        app:strokeWidth="0dp"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"/>
+
                     <EditText
                         android:id="@+id/etTitle"
                         android:layout_width="match_parent"
@@ -94,7 +109,7 @@
                         android:layout_marginEnd="20dp"
                         android:layout_marginBottom="10dp"
                         android:background="@null"
-                        android:hint="@string/note_title"
+                        android:hint="@string/new_task"
                         android:importantForAutofill="no"
                         android:inputType="none"
                         android:textColorHint="@color/white"
@@ -111,11 +126,152 @@
 
                     </LinearLayout>
 
+                    <RelativeLayout
+                        android:id="@+id/addSubTask"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp">
 
+                        <ImageView
+                            android:id="@+id/addSubTaskIcon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/add_icon"
+                            app:tint="@color/secondaryColor" />
+
+                        <TextView
+                            android:id="@+id/addSubTaskText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_centerVertical="true"
+                            android:textColor="@color/secondaryColor"
+                            android:layout_toEndOf="@id/addSubTaskIcon"
+                            android:text="@string/new_task_subject"/>
+
+                    </RelativeLayout>
+                    <RelativeLayout
+                        android:id="@+id/dueDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp">
+
+                        <ImageView
+                            android:id="@+id/dueDateIcon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/calendar"/>
+
+                        <TextView
+                            android:id="@+id/dueDateText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_centerVertical="true"
+                            android:textColor="@color/secondaryColor"
+                            android:layout_toEndOf="@id/dueDateIcon"
+                            android:text="@string/due_date"/>
+
+                        <TextView
+                            android:id="@+id/dueDateValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:padding="5dp"
+                            android:layout_centerVertical="true"
+                            android:background="@color/primaryColor"
+                            android:text="@string/_10_11_1938"
+                            android:textColor="@color/secondaryColor"
+                            />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/timeReminder"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp">
+
+                        <ImageView
+                            android:id="@+id/timeReminderIcon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/time"/>
+
+                        <TextView
+                            android:id="@+id/timeReminderText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_centerVertical="true"
+                            android:textColor="@color/secondaryColor"
+                            android:layout_toEndOf="@id/timeReminderIcon"
+                            android:text="Time &amp; Reminder"/>
+
+                        <TextView
+                            android:id="@+id/timeReminderValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:padding="5dp"
+                            android:layout_centerVertical="true"
+                            android:background="@color/primaryColor"
+                            android:text="@string/no"
+                            android:textColor="@color/secondaryColor"
+                            />
+
+                    </RelativeLayout>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp">
+
+                        <ImageView
+                            android:id="@+id/repeatTaskIcon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/repeat"/>
+
+                        <TextView
+                            android:id="@+id/repeatTaskText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_centerVertical="true"
+                            android:textColor="@color/secondaryColor"
+                            android:layout_toEndOf="@id/repeatTaskIcon"
+                            android:text="Repeate Task"/>
+
+                        <TextView
+                            android:id="@+id/repeatTask"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:padding="5dp"
+                            android:layout_centerVertical="true"
+                            android:background="@color/primaryColor"
+                            android:text="@string/no"
+                            android:textColor="@color/secondaryColor"
+                            />
+
+                    </RelativeLayout>
 
                 </LinearLayout>
 
             </androidx.core.widget.NestedScrollView>
+
 
         </FrameLayout>
 

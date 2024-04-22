@@ -50,7 +50,7 @@ class HomeScreen : AppCompatActivity() {
                 val navController = navHostFragment.navController
 
                 navController.addOnDestinationChangedListener { _, destination, _ ->
-                    if (destination.id == R.id.createNoteFragment) {
+                    if (destination.id == R.id.createNoteFragment || destination.id == R.id.createTaskFragment) {
                         binding.topBar.visibility = View.GONE
                     } else {
                         binding.topBar.visibility = View.VISIBLE

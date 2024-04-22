@@ -12,6 +12,8 @@ data class Task(
     val title: String,
     val subItems: MutableList<String>,
     val category: MutableList<String>,
-    var reminderDate: String,
+    var dueDate: String,
+    var timeReminder: String,
+    var repeatTask: String,
 
     ): Serializable

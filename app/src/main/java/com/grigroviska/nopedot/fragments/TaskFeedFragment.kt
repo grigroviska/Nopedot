@@ -40,6 +40,7 @@ import com.grigroviska.nopedot.utils.hideKeyboard
 import com.grigroviska.nopedot.viewModel.TaskActivityViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -51,7 +52,8 @@ class TaskFeedFragment : Fragment() {
     private lateinit var rvAdapter: RvTasksAdapter
     private val openedEditTextList = mutableListOf<EditText>()
     private val category = mutableListOf<EditText>()
-    lateinit var selectedLastDate : String
+    var selectedLastDate : String = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
+    var selectedLastTime : String = ""
     private val taskActivityViewModel : TaskActivityViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -177,20 +179,18 @@ class TaskFeedFragment : Fragment() {
 
 
             val datePickerDialog = DatePickerDialog(requireContext(), { _, selectedYear, selectedMonth, selectedDay ->
-                // Tarih seçildiğinde çağrılacak işlev
                 val selectedDate = Calendar.getInstance()
                 selectedDate.set(selectedYear, selectedMonth, selectedDay)
 
                 val timePickerDialog = TimePickerDialog(requireContext(), { _, selectedHour, selectedMinute ->
-                    // Saat seçildiğinde çağrılacak işlev
                     selectedDate.set(Calendar.HOUR_OF_DAY, selectedHour)
                     selectedDate.set(Calendar.MINUTE, selectedMinute)
 
                     val selectedDayOfMonth = selectedDate.get(Calendar.DAY_OF_MONTH)
                     calendarText.text = selectedDayOfMonth.toString()
 
-                    val formattedDate = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(selectedDate.time)
-                    selectedLastDate = formattedDate.toString()
+                    selectedLastDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(selectedDate.time).toString()
+                    selectedLastTime = SimpleDateFormat("hh:mm:mm", Locale.getDefault()).format(selectedDate.time).toString()
 
 
                 }, currentDate.get(Calendar.HOUR_OF_DAY), currentDate.get(Calendar.MINUTE), true)
@@ -206,7 +206,7 @@ class TaskFeedFragment : Fragment() {
             try {
                 if (newTask.text.isNotEmpty()){
 
-                    val task = Task(0,newTask.text.toString(), getOpenedEditTexts(), getOpenedEditTexts(), selectedLastDate)
+                    val task = Task(0,newTask.text.toString(), getOpenedEditTexts(), getOpenedEditTexts(), selectedLastDate, selectedLastTime, "")
                     taskActivityViewModel.saveTask(task)
                     dialog.dismiss()
                 }
