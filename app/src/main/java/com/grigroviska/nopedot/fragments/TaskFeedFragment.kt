@@ -3,6 +3,7 @@ package com.grigroviska.nopedot.fragments
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.util.Log
@@ -206,7 +207,7 @@ class TaskFeedFragment : Fragment() {
             try {
                 if (newTask.text.isNotEmpty()){
 
-                    val task = Task(0,newTask.text.toString(), getOpenedEditTexts(), getOpenedEditTexts(), selectedLastDate, selectedLastTime, "")
+                    val task = Task(0,newTask.text.toString(), getOpenedEditTexts(), getOpenedEditTexts(), selectedLastDate, selectedLastTime, "No", -1)
                     taskActivityViewModel.saveTask(task)
                     dialog.dismiss()
                 }

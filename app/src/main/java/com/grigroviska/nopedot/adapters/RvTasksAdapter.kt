@@ -35,6 +35,7 @@ class RvTasksAdapter : ListAdapter<Task, RvTasksAdapter.TaskViewHolder>(TaskDiff
             holder.apply {
                 parent.transitionName = "recyclerView_${task.id}"
                 title.text = task.title
+                title.setTextColor(task.color)
                 itemView.setOnClickListener {
                     val action = TaskFeedFragmentDirections.actionTaskFeedFragmentToCreateTaskFragment(task)
                     val extras = FragmentNavigatorExtras(parent to "recyclerView_${task.id}")

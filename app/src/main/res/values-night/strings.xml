@@ -23,5 +23,15 @@
     <string name="due_date">Due Date</string>
     <string name="_10_11_1938">10/11/1938</string>
     <string name="no">No</string>
+    <string name="set_as_repeat_task">Set as Repeat Task</string>
+    <string name="hour">Hour</string>
+    <string name="daily">Daily</string>
+    <string name="weekly">Weekly</string>
+    <string name="monthly">Monthly</string>
+    <string name="yearly">Yearly</string>
+    <string name="cancel">CANCEL</string>
+    <string name="done">DONE</string>
+    <string name="repeat_task">Repeat Task</string>
+    <string name="time_amp_reminder"><![CDATA[Time & Reminder]]></string>
 
 </resources>

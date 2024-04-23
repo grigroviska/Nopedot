@@ -18,11 +18,6 @@
     <string name="new_task">New Task</string>
     <string name="save">Save</string>
     <string name="new_task_subject">New Task Subject</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
 
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
@@ -64,4 +59,14 @@
     <string name="due_date">Due Date</string>
     <string name="_10_11_1938">10/11/1938</string>
     <string name="no">No</string>
+    <string name="set_as_repeat_task">Set as Repeat Task</string>
+    <string name="hour">Hour</string>
+    <string name="daily">Daily</string>
+    <string name="weekly">Weekly</string>
+    <string name="monthly">Monthly</string>
+    <string name="yearly">Yearly</string>
+    <string name="cancel">CANCEL</string>
+    <string name="done">DONE</string>
+    <string name="repeat_task">Repeat Task</string>
+    <string name="time_amp_reminder"><![CDATA[Time & Reminder]]></string>
 </resources>

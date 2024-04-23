@@ -83,12 +83,13 @@
                     android:id="@+id/textPanel"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginBottom="30dp"
                     android:orientation="vertical">
 
                     <com.google.android.material.button.MaterialButton
                         xmlns:android="http://schemas.android.com/apk/res/android"
                         xmlns:app="http://schemas.android.com/apk/res-auto"
-                        android:id="@+id/filledTonalButton"
+                        android:id="@+id/category"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/no_category"
@@ -215,7 +216,7 @@
                             android:layout_centerVertical="true"
                             android:textColor="@color/secondaryColor"
                             android:layout_toEndOf="@id/timeReminderIcon"
-                            android:text="Time &amp; Reminder"/>
+                            android:text="@string/time_amp_reminder"/>
 
                         <TextView
                             android:id="@+id/timeReminderValue"
@@ -231,6 +232,7 @@
 
                     </RelativeLayout>
                     <RelativeLayout
+                        android:id="@+id/repeatTask"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
@@ -252,10 +254,10 @@
                             android:layout_centerVertical="true"
                             android:textColor="@color/secondaryColor"
                             android:layout_toEndOf="@id/repeatTaskIcon"
-                            android:text="Repeate Task"/>
+                            android:text="@string/repeat_task"/>
 
                         <TextView
-                            android:id="@+id/repeatTask"
+                            android:id="@+id/repeatTaskValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"

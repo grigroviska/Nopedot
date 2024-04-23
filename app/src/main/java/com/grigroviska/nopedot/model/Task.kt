@@ -1,5 +1,6 @@
 package com.grigroviska.nopedot.model
 
+import android.graphics.Color
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.io.Serializable
@@ -14,6 +15,7 @@ data class Task(
     val category: MutableList<String>,
     var dueDate: String,
     var timeReminder: String,
-    var repeatTask: String,
+    var repeatTask: String = "No",
+    val color: Int = -1,
 
     ): Serializable

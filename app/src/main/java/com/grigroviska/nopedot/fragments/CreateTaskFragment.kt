@@ -1,8 +1,10 @@
 package com.grigroviska.nopedot.fragments
 
 import android.app.DatePickerDialog
+import android.app.Dialog
 import android.app.TimePickerDialog
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.MotionEvent
 import androidx.fragment.app.Fragment
@@ -16,11 +18,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
-import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.grigroviska.nopedot.R
 import com.grigroviska.nopedot.activities.HomeScreen
+import com.grigroviska.nopedot.databinding.BottomSheetLayoutBinding
 import com.grigroviska.nopedot.databinding.FragmentCreateTaskBinding
-import com.grigroviska.nopedot.model.Note
 import com.grigroviska.nopedot.model.Task
 import com.grigroviska.nopedot.utils.hideKeyboard
 import com.grigroviska.nopedot.viewModel.TaskActivityViewModel
@@ -37,27 +40,17 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
 
     private lateinit var navController : NavController
     private lateinit var contentBinding: FragmentCreateTaskBinding
-    private var task: Task?=null
+    private lateinit var selectedRepeatOption: String
+    private var task: Task? = null
     private val taskActivityViewModel: TaskActivityViewModel by activityViewModels()
-    private val currentDate = SimpleDateFormat.getInstance().format(Date())
     private val openedEditTextList = mutableListOf<EditText>()
+    private var color = -1
     private val job = CoroutineScope(Dispatchers.Main)
     private val args: CreateTaskFragmentArgs by navArgs()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val animation = MaterialContainerTransform().apply {
-            drawingViewId = R.id.fragment
-            scrimColor= Color.TRANSPARENT
-            duration=300L
-        }
-        sharedElementEnterTransition=animation
-        sharedElementReturnTransition=animation
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        contentBinding= FragmentCreateTaskBinding.bind(view)
+        contentBinding = FragmentCreateTaskBinding.bind(view)
 
         navController = Navigation.findNavController(view)
         val activity = activity as HomeScreen
@@ -73,7 +66,31 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
         }
 
         contentBinding.saveTask.setOnClickListener {
+            task = args.task
 
+            val iterator = openedEditTextList.iterator()
+            while (iterator.hasNext()) {
+                val editText = iterator.next()
+                if (editText.text.isBlank()) {
+                    contentBinding.taskContainer.removeView(editText)
+                    iterator.remove()
+                }
+            }
+
+            if (task != null) {
+                taskActivityViewModel.updateTask(
+                    Task(
+                        task!!.id,
+                        contentBinding.etTitle.text.toString(),
+                        getOpenedEditTexts(),
+                        getOpenedEditTexts(),
+                        contentBinding.dueDateValue.text.toString(),
+                        contentBinding.timeReminderValue.text.toString(),
+                        contentBinding.repeatTaskValue.text.toString(),
+                        color
+                    )
+                )
+            }
         }
 
         contentBinding.dueDate.setOnClickListener{
@@ -86,7 +103,7 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
                 requireContext(),
                 { _, selectedYear, selectedMonth, selectedDay ->
                     val selectedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear"
-                    contentBinding.dueDateValue.setText(selectedDate)
+                    contentBinding.dueDateValue.text = selectedDate
                 },
                 year,
                 month,
@@ -96,9 +113,11 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
         }
 
         contentBinding.timeReminder.setOnClickListener {
-
             showTimePickerDialog()
+        }
 
+        contentBinding.repeatTask.setOnClickListener {
+            showRepeatTaskDialog()
         }
 
         contentBinding.addSubTask.setOnClickListener {
@@ -112,6 +131,7 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
                 rightMargin = resources.getDimensionPixelSize(R.dimen.margin_end)
             }
             newEditText.hint = "New subtext"
+            newEditText.background = null
 
             openedEditTextList.add(newEditText)
 
@@ -137,24 +157,126 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
             }
         }
 
+        contentBinding.chooseColorMode.setOnClickListener{
+
+            val bottomSheetDialog = BottomSheetDialog(
+                requireContext(),
+                R.style.BottomSheetDialogTheme
+            )
+            val bottomSheetView: View =layoutInflater.inflate(
+                R.layout.bottom_sheet_layout,
+                null
+            )
+
+            with(bottomSheetDialog){
+
+                setContentView(bottomSheetView)
+                show()
+
+            }
+
+            val bottomSheetBinding = BottomSheetLayoutBinding.bind(bottomSheetView)
+            bottomSheetBinding.apply {
+                colorPicker.apply {
+                    setSelectedColor(color)
+                    setOnColorSelectedListener {
+                            value ->
+                        color = value
+                        contentBinding.apply {
+                            etTitle.setTextColor(color)
+                        }
+                    }
+                }
+
+            }
+            bottomSheetView.post {
+                bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
+
+
         setUpTask()
     }
+
+    private fun showRepeatTaskDialog() {
+        val dialog = Dialog(requireContext())
+        dialog.setContentView(R.layout.repeat_layout)
+        dialog.setCancelable(true)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val cancel = dialog.findViewById<TextView>(R.id.cancel)
+        val done = dialog.findViewById<TextView>(R.id.done)
+        val hour = dialog.findViewById<TextView>(R.id.hour)
+        val daily = dialog.findViewById<TextView>(R.id.daily)
+        val weekly = dialog.findViewById<TextView>(R.id.weekly)
+        val monthly = dialog.findViewById<TextView>(R.id.monthly)
+        val yearly = dialog.findViewById<TextView>(R.id.yearly)
+
+        cancel.setOnClickListener {
+            dialog.dismiss()
+        }
+        done.setOnClickListener {
+            selectedRepeatOption = when {
+                hour.alpha == 1.0f -> "Hourly"
+                daily.alpha == 1.0f -> "Daily"
+                weekly.alpha == 1.0f -> "Weekly"
+                monthly.alpha == 1.0f -> "Monthly"
+                yearly.alpha == 1.0f -> "Yearly"
+                else -> "No"
+            }
+            contentBinding.repeatTaskValue.text = selectedRepeatOption
+            dialog.dismiss()
+        }
+
+        hour.setOnClickListener { selectRepeatOption(hour, dialog) }
+        daily.setOnClickListener { selectRepeatOption(daily, dialog) }
+        weekly.setOnClickListener { selectRepeatOption(weekly, dialog) }
+        monthly.setOnClickListener { selectRepeatOption(monthly, dialog) }
+        yearly.setOnClickListener { selectRepeatOption(yearly, dialog) }
+
+        dialog.show()
+    }
+
+    private fun selectRepeatOption(selectedOption: TextView, dialog: Dialog) {
+        val hour = dialog.findViewById<TextView>(R.id.hour)
+        val daily = dialog.findViewById<TextView>(R.id.daily)
+        val weekly = dialog.findViewById<TextView>(R.id.weekly)
+        val monthly = dialog.findViewById<TextView>(R.id.monthly)
+        val yearly = dialog.findViewById<TextView>(R.id.yearly)
+
+        hour.alpha = 0.5f
+        daily.alpha = 0.5f
+        weekly.alpha = 0.5f
+        monthly.alpha = 0.5f
+        yearly.alpha = 0.5f
+
+        selectedOption.alpha = 1.0f
+    }
+
+
     private fun setUpTask() {
         val task= args.task
         val title = contentBinding.etTitle
         val date : TextView = contentBinding.dueDateValue
+        val timeReminder : TextView = contentBinding.timeReminderValue
+        val repeatTask : TextView = contentBinding.repeatTaskValue
         val currentDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
 
         if (task!=null){
             title.setText(task.title)
-            if (task.dueDate == ""){
-                date.setText(currentDate)
+            contentBinding.apply {
+                etTitle.setTextColor(task.color)
             }
-            date.setText(task.dueDate)
+
+            if (task.dueDate == ""){
+                date.text = currentDate
+            }
+            timeReminder.setText(task.timeReminder)
+            repeatTask.setText(task.repeatTask)
+            date.text = task.dueDate
 
             val subItems = task.subItems
 
-            // Mevcut subItems listesindeki öğeleri döngüye alarak newEditText öğelerini oluşturup değerlerini yazdırma
             for (subItem in subItems) {
                 val newEditText = EditText(requireContext())
                 newEditText.layoutParams = LinearLayout.LayoutParams(
@@ -167,6 +289,7 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
                 }
 
                 newEditText.setText(subItem)
+                newEditText.background = null
 
                 openedEditTextList.add(newEditText)
 
@@ -195,9 +318,7 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
             contentBinding.apply {
                 job.launch {
                     delay(10)
-
                 }
-
             }
         }
     }
@@ -211,7 +332,7 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
             requireContext(),
             { _, selectedHour, selectedMinute ->
                 val formattedTime = String.format("%02d:%02d", selectedHour, selectedMinute)
-                contentBinding.timeReminderValue.setText(formattedTime)
+                contentBinding.timeReminderValue.text = formattedTime
             },
             hour,
             minute,
@@ -219,5 +340,13 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
         )
 
         timePickerDialog.show()
+    }
+
+    private fun getOpenedEditTexts(): MutableList<String> {
+        val textList = mutableListOf<String>()
+        for (editText in openedEditTextList) {
+            textList.add(editText.text.toString())
+        }
+        return textList
     }
 }
