@@ -109,7 +109,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toStartOf="@id/done"
-                    android:clickable="true"
                     android:layout_marginEnd="20dp"
                     android:textAlignment="center"
                     android:textColor="@color/secondaryColor"

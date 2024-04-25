@@ -12,7 +12,7 @@ data class Task(
     var id: Int=0,
     val title: String,
     val subItems: MutableList<String>,
-    val category: MutableList<String>,
+    val category: String,
     var dueDate: String,
     var timeReminder: String,
     var repeatTask: String = "No",

@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:backgroundTint="@color/secondaryColor"
-            android:tint="@color/backgroundColor"
+            android:tint="@color/black"
             android:src="@drawable/add_icon"
             android:elevation="0dp"
             app:fabSize="normal"

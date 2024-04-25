@@ -1,8 +1,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.NopeDot" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.NopeDot" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <item name="android:statusBarColor">@color/backgroundColor</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="colorPrimary">@color/backgroundColor</item>
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>

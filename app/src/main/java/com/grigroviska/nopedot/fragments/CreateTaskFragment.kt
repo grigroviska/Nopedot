@@ -11,7 +11,9 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
@@ -20,6 +22,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.button.MaterialButton
 import com.grigroviska.nopedot.R
 import com.grigroviska.nopedot.activities.HomeScreen
 import com.grigroviska.nopedot.databinding.BottomSheetLayoutBinding
@@ -32,6 +35,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.util.ArrayList
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -42,6 +46,7 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
     private lateinit var contentBinding: FragmentCreateTaskBinding
     private lateinit var selectedRepeatOption: String
     private var task: Task? = null
+    lateinit var categories : ArrayList<String>
     private val taskActivityViewModel: TaskActivityViewModel by activityViewModels()
     private val openedEditTextList = mutableListOf<EditText>()
     private var color = -1
@@ -59,6 +64,12 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
             contentBinding.taskContentFragmentParent,
             "recyclerView_${args.task?.id}"
         )
+
+        categories = ArrayList()
+        categories.add("Work")
+        categories.add("Personal")
+        categories.add("Wishlist")
+        categories.add("Shopping")
 
         contentBinding.backButton.setOnClickListener {
             requireView().hideKeyboard()
@@ -83,7 +94,7 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
                         task!!.id,
                         contentBinding.etTitle.text.toString(),
                         getOpenedEditTexts(),
-                        getOpenedEditTexts(),
+                        contentBinding.category.text.toString(),
                         contentBinding.dueDateValue.text.toString(),
                         contentBinding.timeReminderValue.text.toString(),
                         contentBinding.repeatTaskValue.text.toString(),
@@ -91,6 +102,30 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
                     )
                 )
             }
+        }
+
+        contentBinding.category.setOnClickListener {
+
+            val popupMenu = PopupMenu(requireContext(), it)
+            // Mevcut kategorileri menüye ekle
+            for (category in categories) {
+                popupMenu.menu.add(category)
+            }
+            // "Yeni kategori ekle" seçeneğini menüye ekle
+            popupMenu.menu.add("New Category")
+            popupMenu.setOnMenuItemClickListener { item ->
+                val categoryName = item.title.toString()
+                if (categoryName == "Yeni kategori ekle") {
+                    // Yeni kategori ekleme ekranını aç
+                    // Kullanıcının yeni kategori eklemesini sağla
+                } else {
+                    // Seçilen kategoriye göre işlem yap
+                    contentBinding.category.text = categoryName
+                }
+                true
+            }
+            popupMenu.show()
+
         }
 
         contentBinding.dueDate.setOnClickListener{
@@ -260,10 +295,12 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
         val date : TextView = contentBinding.dueDateValue
         val timeReminder : TextView = contentBinding.timeReminderValue
         val repeatTask : TextView = contentBinding.repeatTaskValue
+        val category : MaterialButton = contentBinding.category
         val currentDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
 
         if (task!=null){
             title.setText(task.title)
+            category.setText(task.category)
             contentBinding.apply {
                 etTitle.setTextColor(task.color)
             }

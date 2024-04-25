@@ -33,5 +33,7 @@
     <string name="done">DONE</string>
     <string name="repeat_task">Repeat Task</string>
     <string name="time_amp_reminder"><![CDATA[Time & Reminder]]></string>
+    <string name="create_new_category">Create New Category</string>
+    <string name="input_here">Input here.</string>
 
 </resources>

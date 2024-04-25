@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
@@ -40,6 +41,7 @@ import com.grigroviska.nopedot.utils.SwipeToDelete
 import com.grigroviska.nopedot.utils.hideKeyboard
 import com.grigroviska.nopedot.viewModel.TaskActivityViewModel
 import java.text.SimpleDateFormat
+import java.util.ArrayList
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -51,8 +53,8 @@ class TaskFeedFragment : Fragment() {
     private lateinit var binding : FragmentTaskFeedBinding
     private lateinit var dialog : BottomSheetDialog
     private lateinit var rvAdapter: RvTasksAdapter
+    lateinit var categories : ArrayList<String>
     private val openedEditTextList = mutableListOf<EditText>()
-    private val category = mutableListOf<EditText>()
     var selectedLastDate : String = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
     var selectedLastTime : String = ""
     private val taskActivityViewModel : TaskActivityViewModel by activityViewModels()
@@ -83,6 +85,12 @@ class TaskFeedFragment : Fragment() {
             Log.e("Hata", "ff" ,e)
 
         }
+
+        categories = ArrayList()
+        categories.add("Work")
+        categories.add("Personal")
+        categories.add("Wishlist")
+        categories.add("Shopping")
 
         binding.floatingActionButton.setOnClickListener {
             showBottomSheet()
@@ -129,9 +137,34 @@ class TaskFeedFragment : Fragment() {
         val branchImageView = dialogView.findViewById<ImageView>(R.id.branch)
         val calendarImageView : ImageView = dialogView.findViewById<ImageView>(R.id.calendar)
         val save : MaterialButton = dialogView.findViewById<MaterialButton>(R.id.saveTask)
+        val category: MaterialButton = dialogView.findViewById<MaterialButton>(R.id.category)
         val calendarText : TextView = dialogView.findViewById<TextView>(R.id.calendarText)
         val newTask : EditText = dialogView.findViewById<EditText>(R.id.newTask)
         val taskContainer = dialogView.findViewById<LinearLayout>(R.id.taskContainer)
+
+        category.setOnClickListener {
+
+            val popupMenu = PopupMenu(requireContext(), it)
+            // Mevcut kategorileri menüye ekle
+            for (category in categories) {
+                popupMenu.menu.add(category)
+            }
+            // "Yeni kategori ekle" seçeneğini menüye ekle
+            popupMenu.menu.add("New Category")
+            popupMenu.setOnMenuItemClickListener { item ->
+                val categoryName = item.title.toString()
+                if (categoryName == "Yeni kategori ekle") {
+                    // Yeni kategori ekleme ekranını aç
+                    // Kullanıcının yeni kategori eklemesini sağla
+                } else {
+                    // Seçilen kategoriye göre işlem yap
+                    category.text = categoryName
+                }
+                true
+            }
+            popupMenu.show()
+
+        }
 
         branchImageView.setOnClickListener {
             val newEditText = EditText(requireContext())
@@ -207,7 +240,7 @@ class TaskFeedFragment : Fragment() {
             try {
                 if (newTask.text.isNotEmpty()){
 
-                    val task = Task(0,newTask.text.toString(), getOpenedEditTexts(), getOpenedEditTexts(), selectedLastDate, selectedLastTime, "No", -1)
+                    val task = Task(0,newTask.text.toString(), getOpenedEditTexts(), category.text.toString() , selectedLastDate, selectedLastTime, "No", -1)
                     taskActivityViewModel.saveTask(task)
                     dialog.dismiss()
                 }

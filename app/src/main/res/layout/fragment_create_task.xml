@@ -137,8 +137,8 @@
 
                         <ImageView
                             android:id="@+id/addSubTaskIcon"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
                             android:layout_centerVertical="true"
                             android:src="@drawable/add_icon"
                             app:tint="@color/secondaryColor" />
