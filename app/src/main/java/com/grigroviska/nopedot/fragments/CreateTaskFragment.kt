@@ -107,19 +107,14 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
         contentBinding.category.setOnClickListener {
 
             val popupMenu = PopupMenu(requireContext(), it)
-            // Mevcut kategorileri menüye ekle
             for (category in categories) {
                 popupMenu.menu.add(category)
             }
-            // "Yeni kategori ekle" seçeneğini menüye ekle
             popupMenu.menu.add("New Category")
             popupMenu.setOnMenuItemClickListener { item ->
                 val categoryName = item.title.toString()
                 if (categoryName == "Yeni kategori ekle") {
-                    // Yeni kategori ekleme ekranını aç
-                    // Kullanıcının yeni kategori eklemesini sağla
                 } else {
-                    // Seçilen kategoriye göre işlem yap
                     contentBinding.category.text = categoryName
                 }
                 true
@@ -146,6 +141,7 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
             )
             datePickerDialog.show()
         }
+
 
         contentBinding.timeReminder.setOnClickListener {
             showTimePickerDialog()
@@ -296,7 +292,6 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
         val timeReminder : TextView = contentBinding.timeReminderValue
         val repeatTask : TextView = contentBinding.repeatTaskValue
         val category : MaterialButton = contentBinding.category
-        val currentDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
 
         if (task!=null){
             title.setText(task.title)
@@ -304,13 +299,9 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
             contentBinding.apply {
                 etTitle.setTextColor(task.color)
             }
-
-            if (task.dueDate == ""){
-                date.text = currentDate
-            }
+            date.text = task.dueDate
             timeReminder.setText(task.timeReminder)
             repeatTask.setText(task.repeatTask)
-            date.text = task.dueDate
 
             val subItems = task.subItems
 

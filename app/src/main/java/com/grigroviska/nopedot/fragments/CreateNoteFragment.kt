@@ -38,7 +38,7 @@ class CreateNoteFragment : Fragment(R.layout.fragment_create_note) {
     private lateinit var contentBinding: FragmentCreateNoteBinding
     private var note: Note?=null
     //private var sNote : Note?=null
-    private var color = Color.parseColor("#2a2a2a")
+    private var color = Color.parseColor("#111111")
     private lateinit var result: String
     private val noteActivityViewModel: NoteActivityViewModel by activityViewModels()
     private val currentDate = SimpleDateFormat.getInstance().format(Date())

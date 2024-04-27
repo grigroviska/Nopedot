@@ -25,6 +25,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -34,6 +35,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.grigroviska.nopedot.R
 import com.grigroviska.nopedot.activities.HomeScreen
 import com.grigroviska.nopedot.adapters.RvNotesAdapter
+import com.grigroviska.nopedot.adapters.RvTaskCategoryAdapter
 import com.grigroviska.nopedot.adapters.RvTasksAdapter
 import com.grigroviska.nopedot.databinding.FragmentTaskFeedBinding
 import com.grigroviska.nopedot.model.Task
@@ -53,10 +55,11 @@ class TaskFeedFragment : Fragment() {
     private lateinit var binding : FragmentTaskFeedBinding
     private lateinit var dialog : BottomSheetDialog
     private lateinit var rvAdapter: RvTasksAdapter
+    private lateinit var rvCategory: RvTaskCategoryAdapter
     lateinit var categories : ArrayList<String>
     private val openedEditTextList = mutableListOf<EditText>()
     var selectedLastDate : String = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
-    var selectedLastTime : String = ""
+    var selectedLastTime : String = "No"
     private val taskActivityViewModel : TaskActivityViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,7 +83,7 @@ class TaskFeedFragment : Fragment() {
 
         swipeToDelete(binding.rvTask)
         try{
-        recyclerViewDisplay()}
+        recyclerViewDisplay() }
         catch (e: Exception){
             Log.e("Hata", "ff" ,e)
 
@@ -102,8 +105,8 @@ class TaskFeedFragment : Fragment() {
 
                 if (!query.isNullOrEmpty()) {
                     val searchText = "%$query"
-                    taskActivityViewModel.searchTask(searchText).observe(viewLifecycleOwner) { notes ->
-                        rvAdapter.submitList(notes)
+                    taskActivityViewModel.searchTask(searchText).observe(viewLifecycleOwner) { tasks ->
+                        rvAdapter.submitList(tasks)
                     }
                 } else {
                     observerDataChanges()
@@ -116,8 +119,8 @@ class TaskFeedFragment : Fragment() {
                     observerDataChanges()
                 } else {
                     val searchText = "%$newText"
-                    taskActivityViewModel.searchTask(searchText).observe(viewLifecycleOwner) { notes ->
-                        rvAdapter.submitList(notes)}
+                    taskActivityViewModel.searchTask(searchText).observe(viewLifecycleOwner) { tasks ->
+                        rvAdapter.submitList(tasks)}
                 }
                 return true
             }
@@ -145,19 +148,15 @@ class TaskFeedFragment : Fragment() {
         category.setOnClickListener {
 
             val popupMenu = PopupMenu(requireContext(), it)
-            // Mevcut kategorileri menüye ekle
             for (category in categories) {
                 popupMenu.menu.add(category)
             }
-            // "Yeni kategori ekle" seçeneğini menüye ekle
             popupMenu.menu.add("New Category")
             popupMenu.setOnMenuItemClickListener { item ->
                 val categoryName = item.title.toString()
                 if (categoryName == "Yeni kategori ekle") {
-                    // Yeni kategori ekleme ekranını aç
-                    // Kullanıcının yeni kategori eklemesini sağla
+
                 } else {
-                    // Seçilen kategoriye göre işlem yap
                     category.text = categoryName
                 }
                 true
@@ -203,14 +202,12 @@ class TaskFeedFragment : Fragment() {
         val currentDate = Calendar.getInstance()
         val dayOfMonth = currentDate.get(Calendar.DAY_OF_MONTH)
         calendarText.text = dayOfMonth.toString()
-
+        selectedLastDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(currentDate.time).toString()
         calendarImageView.setOnClickListener {
             val currentDate = Calendar.getInstance()
             val year = currentDate.get(Calendar.YEAR)
             val month = currentDate.get(Calendar.MONTH)
             val day = currentDate.get(Calendar.DAY_OF_MONTH)
-
-
 
             val datePickerDialog = DatePickerDialog(requireContext(), { _, selectedYear, selectedMonth, selectedDay ->
                 val selectedDate = Calendar.getInstance()
@@ -226,11 +223,14 @@ class TaskFeedFragment : Fragment() {
                     selectedLastDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(selectedDate.time).toString()
                     selectedLastTime = SimpleDateFormat("hh:mm:mm", Locale.getDefault()).format(selectedDate.time).toString()
 
-
                 }, currentDate.get(Calendar.HOUR_OF_DAY), currentDate.get(Calendar.MINUTE), true)
 
                 timePickerDialog.show()
             }, year, month, day)
+
+            datePickerDialog.setOnCancelListener {
+                selectedLastDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(currentDate.time).toString()
+            }
 
             datePickerDialog.show()
         }
@@ -284,6 +284,7 @@ class TaskFeedFragment : Fragment() {
                         transientBottomBar?.setAction("UNDO"){
                             taskActivityViewModel.saveTask(task)
                             actionBtnTapped=true
+                            binding.noData.isVisible =false
                         }
 
                         super.onShown(transientBottomBar)
@@ -345,8 +346,10 @@ class TaskFeedFragment : Fragment() {
         observerDataChanges()
 
     }
+
     private fun observerDataChanges() {
         taskActivityViewModel.getAllTasks().observe(viewLifecycleOwner){list->
+            binding.noData.isVisible = list.isEmpty()
             rvAdapter.submitList(list)
         }
     }

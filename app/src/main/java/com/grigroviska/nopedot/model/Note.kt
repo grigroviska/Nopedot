@@ -1,5 +1,6 @@
 package com.grigroviska.nopedot.model
 
+import android.graphics.Color
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.io.Serializable
@@ -12,7 +13,7 @@ data class Note(
     val title: String,
     val content: String,
     val date: String,
-    val color: Int = -1,
+    val color: Int = Color.parseColor("#111111"),
 
 
-) : Serializable
+    ) : Serializable

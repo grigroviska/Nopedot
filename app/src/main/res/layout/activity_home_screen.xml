@@ -17,7 +17,8 @@
             android:id="@+id/topBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/primaryColor"
+            android:background="@color/backgroundColor"
+            android:layout_marginTop="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -26,7 +27,7 @@
                 android:id="@+id/noteList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
+                android:layout_toStartOf="@id/taskList"
                 android:clickable="true"
                 android:layout_centerVertical="true"
                 android:src="@drawable/note" />
@@ -36,10 +37,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                android:layout_toEndOf="@id/noteList"
+                android:layout_centerInParent="true"
                 android:layout_centerVertical="true"
                 android:paddingStart="10dp"
                 android:src="@drawable/task"
+                android:layout_gravity="center" />
+
+            <ImageView
+                android:id="@+id/subscriptionList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:layout_toEndOf="@id/taskList"
+                android:layout_centerVertical="true"
+                android:paddingStart="10dp"
+                android:src="@drawable/wallet"
                 android:layout_gravity="center" />
 
             <ImageView
