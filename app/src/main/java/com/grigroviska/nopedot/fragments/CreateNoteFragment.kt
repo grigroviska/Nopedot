@@ -160,6 +160,8 @@ class CreateNoteFragment : Fragment(R.layout.fragment_create_note) {
         val content = contentBinding.etNoteContent
         val lastEdited= contentBinding.lastEdited
 
+        color = note!!.color
+
         if (note==null){
             contentBinding.lastEdited.text = getString(R.string.edited_on, SimpleDateFormat.getDateInstance().format(Date()))
         }

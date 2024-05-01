@@ -49,7 +49,7 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
     lateinit var categories : ArrayList<String>
     private val taskActivityViewModel: TaskActivityViewModel by activityViewModels()
     private val openedEditTextList = mutableListOf<EditText>()
-    private var color = -1
+    private var color: Int = -1
     private val job = CoroutineScope(Dispatchers.Main)
     private val args: CreateTaskFragmentArgs by navArgs()
 
@@ -89,19 +89,41 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
             }
 
             if (task != null) {
-                taskActivityViewModel.updateTask(
-                    Task(
-                        task!!.id,
-                        contentBinding.etTitle.text.toString(),
-                        getOpenedEditTexts(),
-                        contentBinding.category.text.toString(),
-                        contentBinding.dueDateValue.text.toString(),
-                        contentBinding.timeReminderValue.text.toString(),
-                        contentBinding.repeatTaskValue.text.toString(),
-                        color
+                val newColor = color
+
+                if (newColor == task!!.color) {
+
+                    taskActivityViewModel.updateTask(
+                        Task(
+                            task!!.id,
+                            contentBinding.etTitle.text.toString(),
+                            getOpenedEditTexts(),
+                            contentBinding.category.text.toString(),
+                            contentBinding.dueDateValue.text.toString(),
+                            contentBinding.timeReminderValue.text.toString(),
+                            contentBinding.repeatTaskValue.text.toString(),
+                            task!!.color
+                        )
                     )
-                )
+                } else {
+
+                    taskActivityViewModel.updateTask(
+                        Task(
+                            task!!.id,
+                            contentBinding.etTitle.text.toString(),
+                            getOpenedEditTexts(),
+                            contentBinding.category.text.toString(),
+                            contentBinding.dueDateValue.text.toString(),
+                            contentBinding.timeReminderValue.text.toString(),
+                            contentBinding.repeatTaskValue.text.toString(),
+                            newColor
+                        )
+                    )
+                }
             }
+
+            requireView().hideKeyboard()
+            navController.popBackStack()
         }
 
         contentBinding.category.setOnClickListener {
@@ -209,12 +231,12 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
             val bottomSheetBinding = BottomSheetLayoutBinding.bind(bottomSheetView)
             bottomSheetBinding.apply {
                 colorPicker.apply {
-                    setSelectedColor(color)
+                    setSelectedColor(color!!)
                     setOnColorSelectedListener {
                             value ->
                         color = value
                         contentBinding.apply {
-                            etTitle.setTextColor(color)
+                            etTitle.setTextColor(color!!)
                         }
                     }
                 }
@@ -302,6 +324,8 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
             date.text = task.dueDate
             timeReminder.setText(task.timeReminder)
             repeatTask.setText(task.repeatTask)
+
+            color = task.color
 
             val subItems = task.subItems
 
