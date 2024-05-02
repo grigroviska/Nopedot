@@ -1,5 +1,6 @@
 package com.grigroviska.nopedot.fragments
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
@@ -88,16 +89,17 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
                 }
             }
 
+            val newSubItems = getOpenedEditTexts()
+
             if (task != null) {
                 val newColor = color
 
                 if (newColor == task!!.color) {
-
                     taskActivityViewModel.updateTask(
                         Task(
                             task!!.id,
                             contentBinding.etTitle.text.toString(),
-                            getOpenedEditTexts(),
+                            newSubItems, // Güncellenmiş subItems listesi
                             contentBinding.category.text.toString(),
                             contentBinding.dueDateValue.text.toString(),
                             contentBinding.timeReminderValue.text.toString(),
@@ -106,12 +108,11 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
                         )
                     )
                 } else {
-
                     taskActivityViewModel.updateTask(
                         Task(
                             task!!.id,
                             contentBinding.etTitle.text.toString(),
-                            getOpenedEditTexts(),
+                            newSubItems, // Güncellenmiş subItems listesi
                             contentBinding.category.text.toString(),
                             contentBinding.dueDateValue.text.toString(),
                             contentBinding.timeReminderValue.text.toString(),
@@ -125,6 +126,7 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
             requireView().hideKeyboard()
             navController.popBackStack()
         }
+
 
         contentBinding.category.setOnClickListener {
 
@@ -247,7 +249,6 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
             }
         }
 
-
         setUpTask()
     }
 
@@ -346,16 +347,23 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
                 openedEditTextList.add(newEditText)
 
                 val removeIcon = AppCompatResources.getDrawable(requireContext(), R.drawable.remove)
-                newEditText.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, removeIcon, null)
+                newEditText.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    null,
+                    null,
+                    removeIcon,
+                    null
+                )
                 contentBinding.taskContainer.addView(newEditText)
 
+                // Inside onViewCreated method, where you set up the remove icon
                 removeIcon?.let { icon ->
                     icon.setBounds(0, 0, icon.intrinsicWidth, icon.intrinsicHeight)
                     newEditText.setOnTouchListener { _, event ->
                         if (event.action == MotionEvent.ACTION_UP) {
-                            val removeBounds = (newEditText.right - newEditText.compoundDrawables[2].bounds.width())
+                            val removeBounds =
+                                (newEditText.right - newEditText.compoundDrawables[2].bounds.width())
                             if (event.rawX >= removeBounds) {
-                                contentBinding.taskContainer.removeView(newEditText)
+                                showDeleteConfirmationDialog(newEditText, newEditText.text.toString())
                                 true
                             } else {
                                 false
@@ -367,12 +375,30 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
                 }
             }
 
-            contentBinding.apply {
+                contentBinding.apply {
                 job.launch {
                     delay(10)
                 }
             }
         }
+    }
+
+    private fun showDeleteConfirmationDialog(newEditText: EditText, subItemText: String) {
+        val dialogBuilder = AlertDialog.Builder(requireContext())
+        dialogBuilder.setMessage(getString(R.string.are_you_sure_you_want_to_delete_this_sub_item))
+            .setCancelable(false)
+            .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
+                openedEditTextList.removeIf { it.text.toString() == subItemText }
+                contentBinding.taskContainer.removeView(newEditText)
+                taskActivityViewModel.deleteSubItem(subItemText)
+                dialog.dismiss()
+            }
+            .setNegativeButton(R.string.no) { dialog, _ ->
+                dialog.dismiss()
+            }
+        val alert = dialogBuilder.create()
+        alert.setTitle("Delete Sub item")
+        alert.show()
     }
 
     private fun showTimePickerDialog() {

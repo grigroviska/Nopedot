@@ -14,6 +14,7 @@ import com.grigroviska.nopedot.databinding.TaskItemLayoutBinding
 import com.grigroviska.nopedot.fragments.TaskFeedFragmentDirections
 import com.grigroviska.nopedot.model.Task
 import com.grigroviska.nopedot.utils.hideKeyboard
+import java.text.DateFormatSymbols
 
 class RvTasksAdapter : ListAdapter<Task, RvTasksAdapter.TaskViewHolder>(TaskDiffUtilCallback()) {
 
@@ -21,6 +22,10 @@ class RvTasksAdapter : ListAdapter<Task, RvTasksAdapter.TaskViewHolder>(TaskDiff
         private val contentBinding = TaskItemLayoutBinding.bind(itemView)
         val title: TextView = contentBinding.taskCheckBox
         val parent: MaterialCardView = contentBinding.taskItemLayout
+        val day : TextView = contentBinding.day
+        val month : TextView = contentBinding.month
+        val year : TextView = contentBinding.year
+        val subItems : TextView = contentBinding.subItems
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
@@ -36,6 +41,12 @@ class RvTasksAdapter : ListAdapter<Task, RvTasksAdapter.TaskViewHolder>(TaskDiff
                 parent.transitionName = "recyclerView_${task.id}"
                 title.text = task.title
                 title.setTextColor(task.color)
+                day.text = task.day
+                month.text = getMonthName(task.month.toInt())
+                year.text = task.year
+                val subItemsText = task.subItems.joinToString(", ")
+                subItems.text = subItemsText
+
                 itemView.setOnClickListener {
                     val action = TaskFeedFragmentDirections.actionTaskFeedFragmentToCreateTaskFragment(task)
                     val extras = FragmentNavigatorExtras(parent to "recyclerView_${task.id}")
@@ -50,5 +61,9 @@ class RvTasksAdapter : ListAdapter<Task, RvTasksAdapter.TaskViewHolder>(TaskDiff
                 }
             }
         }
+    }
+
+    private fun getMonthName(monthNumber: Int): String {
+        return DateFormatSymbols().months[monthNumber - 1]
     }
 }

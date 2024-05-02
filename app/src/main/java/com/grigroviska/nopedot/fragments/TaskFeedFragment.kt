@@ -1,7 +1,11 @@
 package com.grigroviska.nopedot.fragments
 
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.PendingIntent
 import android.app.TimePickerDialog
+import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
@@ -39,6 +43,7 @@ import com.grigroviska.nopedot.adapters.RvTaskCategoryAdapter
 import com.grigroviska.nopedot.adapters.RvTasksAdapter
 import com.grigroviska.nopedot.databinding.FragmentTaskFeedBinding
 import com.grigroviska.nopedot.model.Task
+import com.grigroviska.nopedot.receiver.AlarmReceiver
 import com.grigroviska.nopedot.utils.SwipeToDelete
 import com.grigroviska.nopedot.utils.hideKeyboard
 import com.grigroviska.nopedot.viewModel.TaskActivityViewModel
@@ -346,6 +351,24 @@ class TaskFeedFragment : Fragment() {
         observerDataChanges()
 
     }
+
+    /*private fun alarm(taskName : String, taskValue : String, year : Int, month : Int, day : Int, hour : Int, minute : Int){
+        val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        val intent = Intent(requireContext(), AlarmReceiver::class.java)
+
+        intent.putExtra(taskName, taskValue)
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            requireContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month, day, hour, minute)
+
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+
+    }*/
 
     private fun observerDataChanges() {
         taskActivityViewModel.getAllTasks().observe(viewLifecycleOwner){list->

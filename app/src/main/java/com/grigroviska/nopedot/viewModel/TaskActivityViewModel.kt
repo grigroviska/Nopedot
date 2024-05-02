@@ -22,6 +22,10 @@ class TaskActivityViewModel(private val repository: TaskRepository) : ViewModel(
         repository.deleteTask(existingTask)
     }
 
+    fun deleteSubItem(subItemText: String) = viewModelScope.launch(Dispatchers.IO) {
+        repository.deleteSubItem(subItemText)
+    }
+
     fun searchTask(query: String): LiveData<List<Task>>
     {
         return repository.searchTask(query)

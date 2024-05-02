@@ -26,4 +26,7 @@ interface TaskDAO {
 
     @Delete
     suspend fun deleteTask(task: Task)
+
+    @Query("DELETE FROM Task WHERE subItems = :subItemText")
+    suspend fun deleteSubItem(subItemText: String)
 }

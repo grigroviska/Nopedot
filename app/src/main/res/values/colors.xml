@@ -23,7 +23,7 @@
 
 
     <array name="color_picker">
-        <item>@color/primaryColor</item>
+        <item>@color/thirdColor</item>
         <item>@color/card_purple</item>
         <item>@color/peach</item>
         <item>@color/green</item>

@@ -17,6 +17,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:background="@color/thirdColor"
             android:id="@+id/toolbarFragmentNoteContent">
 
             <ImageView

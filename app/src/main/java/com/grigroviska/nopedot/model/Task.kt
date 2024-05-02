@@ -1,6 +1,5 @@
 package com.grigroviska.nopedot.model
 
-import android.graphics.Color
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.io.Serializable
@@ -18,4 +17,15 @@ data class Task(
     var repeatTask: String = "No",
     val color: Int = -1,
 
-    ): Serializable
+    ): Serializable{
+
+    val day: String
+        get() = dueDate.split(".")[0] // Günü almak için "." karakterinden böl
+
+    val month: String
+        get() = dueDate.split(".")[1] // Ayı almak için "." karakterinden böl
+
+    val year: String
+        get() = dueDate.split(".")[2] // Yılı almak için "." karakterinden böl
+
+    }
