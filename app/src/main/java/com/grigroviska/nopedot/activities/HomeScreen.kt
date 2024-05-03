@@ -1,5 +1,6 @@
 package com.grigroviska.nopedot.activities
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -49,6 +50,7 @@ class HomeScreen : AppCompatActivity() {
                 val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment
                 val navController = navHostFragment.navController
 
+
                 navController.addOnDestinationChangedListener { _, destination, _ ->
                     if (destination.id == R.id.createNoteFragment || destination.id == R.id.createTaskFragment) {
                         binding.topBar.visibility = View.GONE
@@ -61,6 +63,8 @@ class HomeScreen : AppCompatActivity() {
                     val currentDestination = navController.currentDestination?.id
                     if (currentDestination != R.id.noteFeedFragment) {
                         navController.navigate(R.id.noteFeedFragment)
+                        binding.noteList.setImageResource(R.drawable.note_selected)
+                        binding.taskList.setImageResource(R.drawable.task)
                     }else{
 
                     }
@@ -70,9 +74,12 @@ class HomeScreen : AppCompatActivity() {
                     val currentDestination = navController.currentDestination?.id
                     if (currentDestination != R.id.taskFeedFragment) {
                         navController.navigate(R.id.taskFeedFragment)
+                        binding.noteList.setImageResource(R.drawable.note)
+                        binding.taskList.setImageResource(R.drawable.task_selected)
                     }else{
 
                     }
+
                 }
             }catch (e: Exception){
 

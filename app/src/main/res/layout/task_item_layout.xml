@@ -10,8 +10,8 @@
         android:id="@+id/taskItemLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardElevation="-20dp"
-        android:elevation="-20dp"
+        app:cardElevation="10dp"
+        android:elevation="10dp"
         app:cardCornerRadius="8dp"
         android:clickable="true"
         android:focusable="true"
@@ -87,6 +87,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"
                 android:textStyle="bold"
+                android:textSize="16sp"
                 android:text="@string/this_is_an_sample_task_inside_the_application"
                 android:paddingStart="8dp"
                 android:buttonTint="@color/secondaryColor" />

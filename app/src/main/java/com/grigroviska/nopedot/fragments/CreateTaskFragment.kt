@@ -99,7 +99,8 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
                         Task(
                             task!!.id,
                             contentBinding.etTitle.text.toString(),
-                            newSubItems, // Güncellenmiş subItems listesi
+                            false,
+                            newSubItems,
                             contentBinding.category.text.toString(),
                             contentBinding.dueDateValue.text.toString(),
                             contentBinding.timeReminderValue.text.toString(),
@@ -112,7 +113,8 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
                         Task(
                             task!!.id,
                             contentBinding.etTitle.text.toString(),
-                            newSubItems, // Güncellenmiş subItems listesi
+                            false,
+                            newSubItems,
                             contentBinding.category.text.toString(),
                             contentBinding.dueDateValue.text.toString(),
                             contentBinding.timeReminderValue.text.toString(),

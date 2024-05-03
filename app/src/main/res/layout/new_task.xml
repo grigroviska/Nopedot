@@ -76,7 +76,7 @@
                     android:layout_alignStart="@id/calendar"
                     android:layout_alignBottom="@id/calendar"
                     android:padding="6dp"
-                    android:text="1"
+                    android:text=" 1"
                     android:textColor="@color/secondaryColor"
                     android:textSize="10sp" />
 

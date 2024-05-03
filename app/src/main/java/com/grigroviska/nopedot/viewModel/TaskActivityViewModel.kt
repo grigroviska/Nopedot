@@ -33,4 +33,8 @@ class TaskActivityViewModel(private val repository: TaskRepository) : ViewModel(
 
     fun getAllTasks(): LiveData<List<Task>> = repository.getTask()
 
+    fun updateTaskDone(taskId: Int, done: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+        repository.updateTaskDone(taskId, done)
+    }
+
 }

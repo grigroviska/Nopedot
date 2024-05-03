@@ -206,7 +206,7 @@ class TaskFeedFragment : Fragment() {
 
         val currentDate = Calendar.getInstance()
         val dayOfMonth = currentDate.get(Calendar.DAY_OF_MONTH)
-        calendarText.text = dayOfMonth.toString()
+        calendarText.text = " $dayOfMonth"
         selectedLastDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(currentDate.time).toString()
         calendarImageView.setOnClickListener {
             val currentDate = Calendar.getInstance()
@@ -223,7 +223,7 @@ class TaskFeedFragment : Fragment() {
                     selectedDate.set(Calendar.MINUTE, selectedMinute)
 
                     val selectedDayOfMonth = selectedDate.get(Calendar.DAY_OF_MONTH)
-                    calendarText.text = selectedDayOfMonth.toString()
+                    calendarText.text = " ${selectedDayOfMonth}"
 
                     selectedLastDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(selectedDate.time).toString()
                     selectedLastTime = SimpleDateFormat("hh:mm:mm", Locale.getDefault()).format(selectedDate.time).toString()
@@ -241,21 +241,40 @@ class TaskFeedFragment : Fragment() {
         }
 
         save.setOnClickListener {
-
             try {
-                if (newTask.text.isNotEmpty()){
+                if (newTask.text.isNotEmpty()) {
+                    val iterator = openedEditTextList.iterator()
+                    while (iterator.hasNext()) {
+                        val editText = iterator.next()
+                        if (editText.text.isBlank()) {
+                            taskContainer.removeView(editText)
+                            iterator.remove()
+                        }
+                    }
 
-                    val task = Task(0,newTask.text.toString(), getOpenedEditTexts(), category.text.toString() , selectedLastDate, selectedLastTime, "No", -1)
+                    val task = Task(0,newTask.text.toString(), false, getOpenedEditTexts(), category.text.toString() , selectedLastDate, selectedLastTime, "No", -1)
                     taskActivityViewModel.saveTask(task)
-                    dialog.dismiss()
-                }
-            }catch (e: Exception){
 
+                    if (selectedLastDate != "No" && selectedLastTime != "No") {
+                        val calendar = Calendar.getInstance().apply {
+                            val dateTime = SimpleDateFormat("dd.MM.yyyy hh:mm:ss", Locale.getDefault()).parse("$selectedLastDate $selectedLastTime")
+                            time = dateTime
+                        }
+                        val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                        val intent = Intent(context, AlarmReceiver::class.java).apply {
+                            putExtra("TASK_NAME", newTask.text.toString())
+                        }
+                        val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+                        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+                    }
+                    dialog.dismiss()
+                } else {
+                    Toast.makeText(requireContext(), "Please enter a task name.", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
                 Toast.makeText(requireContext(), e.stackTraceToString(), Toast.LENGTH_LONG).show()
                 Log.e("Hata", "Bir hata oluştu", e)
-
             }
-
         }
 
         dialog.show()
@@ -332,7 +351,7 @@ class TaskFeedFragment : Fragment() {
             binding.rvTask.apply {
                 layoutManager= StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
                 setHasFixedSize(true)
-                rvAdapter= RvTasksAdapter()
+                rvAdapter= RvTasksAdapter(taskActivityViewModel)
                 rvAdapter.stateRestorationPolicy=
                     RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
                 adapter=rvAdapter
@@ -376,5 +395,6 @@ class TaskFeedFragment : Fragment() {
             rvAdapter.submitList(list)
         }
     }
+
 
 }

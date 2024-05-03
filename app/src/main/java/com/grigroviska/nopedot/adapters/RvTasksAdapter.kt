@@ -1,8 +1,10 @@
 package com.grigroviska.nopedot.adapters
 
+import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.TextView
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -14,9 +16,10 @@ import com.grigroviska.nopedot.databinding.TaskItemLayoutBinding
 import com.grigroviska.nopedot.fragments.TaskFeedFragmentDirections
 import com.grigroviska.nopedot.model.Task
 import com.grigroviska.nopedot.utils.hideKeyboard
+import com.grigroviska.nopedot.viewModel.TaskActivityViewModel
 import java.text.DateFormatSymbols
 
-class RvTasksAdapter : ListAdapter<Task, RvTasksAdapter.TaskViewHolder>(TaskDiffUtilCallback()) {
+class RvTasksAdapter(private val taskActivityViewModel: TaskActivityViewModel) : ListAdapter<Task, RvTasksAdapter.TaskViewHolder>(TaskDiffUtilCallback()) {
 
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val contentBinding = TaskItemLayoutBinding.bind(itemView)
@@ -26,6 +29,8 @@ class RvTasksAdapter : ListAdapter<Task, RvTasksAdapter.TaskViewHolder>(TaskDiff
         val month : TextView = contentBinding.month
         val year : TextView = contentBinding.year
         val subItems : TextView = contentBinding.subItems
+        val checkboxTask : CheckBox = contentBinding.taskCheckBox
+        val taskItemLayout : MaterialCardView = contentBinding.taskItemLayout
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
@@ -40,6 +45,7 @@ class RvTasksAdapter : ListAdapter<Task, RvTasksAdapter.TaskViewHolder>(TaskDiff
             holder.apply {
                 parent.transitionName = "recyclerView_${task.id}"
                 title.text = task.title
+                checkboxTask.isChecked = task.done
                 title.setTextColor(task.color)
                 day.text = task.day
                 month.text = getMonthName(task.month.toInt())
@@ -47,17 +53,40 @@ class RvTasksAdapter : ListAdapter<Task, RvTasksAdapter.TaskViewHolder>(TaskDiff
                 val subItemsText = task.subItems.joinToString(", ")
                 subItems.text = subItemsText
 
-                itemView.setOnClickListener {
+                taskItemLayout.setOnClickListener {
                     val action = TaskFeedFragmentDirections.actionTaskFeedFragmentToCreateTaskFragment(task)
                     val extras = FragmentNavigatorExtras(parent to "recyclerView_${task.id}")
                     it.hideKeyboard()
                     Navigation.findNavController(it).navigate(action, extras)
                 }
+
+                title.apply {
+                    if (task.done) {
+                        paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                    } else {
+                        paintFlags = paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                    }
+                }
+
                 title.setOnClickListener {
                     val action = TaskFeedFragmentDirections.actionTaskFeedFragmentToCreateTaskFragment(task)
                     val extras = FragmentNavigatorExtras(parent to "recyclerView_${task.id}")
                     it.hideKeyboard()
                     Navigation.findNavController(it).navigate(action, extras)
+                }
+
+                checkboxTask.setOnClickListener {
+                    val isChecked = checkboxTask.isChecked
+                    task.done = isChecked
+                    taskActivityViewModel.updateTaskDone(task.id, isChecked)
+
+                    title.apply {
+                        if (isChecked) {
+                            paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                        } else {
+                            paintFlags = paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                        }
+                    }
                 }
             }
         }

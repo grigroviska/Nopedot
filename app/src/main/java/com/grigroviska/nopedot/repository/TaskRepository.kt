@@ -17,4 +17,7 @@ class TaskRepository(private val db: TaskDatabase) {
 
     suspend fun deleteSubItem(subItem : String) = db.getTaskDao().deleteSubItem(subItem)
 
+    suspend fun updateTaskDone(taskId: Int, done: Boolean) {
+        db.getTaskDao().updateTaskDone(taskId, done)
+    }
 }

@@ -29,4 +29,8 @@ interface TaskDAO {
 
     @Query("DELETE FROM Task WHERE subItems = :subItemText")
     suspend fun deleteSubItem(subItemText: String)
+
+    @Query("UPDATE Task SET done = :done WHERE id = :taskId")
+    suspend fun updateTaskDone(taskId: Int, done: Boolean)
+
 }

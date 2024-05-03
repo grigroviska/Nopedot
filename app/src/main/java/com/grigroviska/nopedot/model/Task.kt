@@ -10,6 +10,7 @@ data class Task(
     @PrimaryKey(autoGenerate = true)
     var id: Int=0,
     val title: String,
+    var done: Boolean=false,
     val subItems: MutableList<String>,
     val category: String,
     var dueDate: String,

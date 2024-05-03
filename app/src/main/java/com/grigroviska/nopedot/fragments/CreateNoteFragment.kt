@@ -203,10 +203,11 @@ class CreateNoteFragment : Fragment(R.layout.fragment_create_note) {
                         bundleOf("bundleKey" to result)
                     )
                     requireView().hideKeyboard()
+                    navigateBack()
                 }
                 else -> {
                     updateNote()
-                    navController.popBackStack()
+                    navigateBack()
                 }
             }
         }
@@ -226,5 +227,10 @@ class CreateNoteFragment : Fragment(R.layout.fragment_create_note) {
         }
     }
 
+    private fun navigateBack() {
+        job.launch(Dispatchers.Main) {
+            navController.popBackStack()
+        }
+    }
 
 }
