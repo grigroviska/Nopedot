@@ -95,4 +95,5 @@ class RvTasksAdapter(private val taskActivityViewModel: TaskActivityViewModel) :
     private fun getMonthName(monthNumber: Int): String {
         return DateFormatSymbols().months[monthNumber - 1]
     }
+
 }

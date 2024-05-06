@@ -28,8 +28,10 @@ import com.grigroviska.nopedot.R
 import com.grigroviska.nopedot.activities.HomeScreen
 import com.grigroviska.nopedot.databinding.BottomSheetLayoutBinding
 import com.grigroviska.nopedot.databinding.FragmentCreateTaskBinding
+import com.grigroviska.nopedot.model.Category
 import com.grigroviska.nopedot.model.Task
 import com.grigroviska.nopedot.utils.hideKeyboard
+import com.grigroviska.nopedot.viewModel.CategoryActivityViewModel
 import com.grigroviska.nopedot.viewModel.TaskActivityViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,8 +49,8 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
     private lateinit var contentBinding: FragmentCreateTaskBinding
     private lateinit var selectedRepeatOption: String
     private var task: Task? = null
-    lateinit var categories : ArrayList<String>
     private val taskActivityViewModel: TaskActivityViewModel by activityViewModels()
+    private val categoryActivityViewModel: CategoryActivityViewModel by activityViewModels()
     private val openedEditTextList = mutableListOf<EditText>()
     private var color: Int = -1
     private val job = CoroutineScope(Dispatchers.Main)
@@ -65,12 +67,6 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
             contentBinding.taskContentFragmentParent,
             "recyclerView_${args.task?.id}"
         )
-
-        categories = ArrayList()
-        categories.add("Work")
-        categories.add("Personal")
-        categories.add("Wishlist")
-        categories.add("Shopping")
 
         contentBinding.backButton.setOnClickListener {
             requireView().hideKeyboard()
@@ -130,24 +126,7 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
         }
 
 
-        contentBinding.category.setOnClickListener {
-
-            val popupMenu = PopupMenu(requireContext(), it)
-            for (category in categories) {
-                popupMenu.menu.add(category)
-            }
-            popupMenu.menu.add("New Category")
-            popupMenu.setOnMenuItemClickListener { item ->
-                val categoryName = item.title.toString()
-                if (categoryName == "Yeni kategori ekle") {
-                } else {
-                    contentBinding.category.text = categoryName
-                }
-                true
-            }
-            popupMenu.show()
-
-        }
+        setupCategorySelection(contentBinding.category)
 
         contentBinding.dueDate.setOnClickListener{
             val currentDate = Calendar.getInstance()
@@ -428,5 +407,69 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
             textList.add(editText.text.toString())
         }
         return textList
+    }
+
+    private fun setupCategorySelection(categoryButton: MaterialButton) {
+        categoryActivityViewModel.getAllCategories().observe(viewLifecycleOwner) { categories ->
+            val popupMenu = PopupMenu(requireContext(), categoryButton)
+            categories.forEach { category ->
+                popupMenu.menu.add(category.categoryName)
+            }
+            popupMenu.menu.add("New Category")
+            popupMenu.setOnMenuItemClickListener { item ->
+                val categoryName = item.title.toString()
+                if (categoryName == "New Category") {
+                    showNewCategoryDialog()
+                    categoryButton.text = categoryName
+                } else {
+                    categoryButton.text = categoryName
+                }
+                true
+            }
+            categoryButton.setOnClickListener { popupMenu.show() }
+        }
+    }
+
+    private fun showNewCategoryDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.create_new_category, null)
+        val newCategoryNameEditText = dialogView.findViewById<EditText>(R.id.newCategory)
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        dialogView.findViewById<TextView>(R.id.save).setOnClickListener {
+            val newCategoryName = newCategoryNameEditText.text.toString().trim()
+
+            if (newCategoryName.isNotEmpty()) {
+                if (isExistingCategory(newCategoryName)) {
+                    Toast.makeText(requireContext(), "Category already exists.", Toast.LENGTH_SHORT).show()
+                } else {
+                    val newCategory = Category(0, newCategoryName)
+                    categoryActivityViewModel.saveCategory(newCategory)
+                    dialog.dismiss()
+                }
+            } else {
+                Toast.makeText(requireContext(), "Please enter a category name.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        dialogView.findViewById<TextView>(R.id.cancel).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun isExistingCategory(categoryName: String): Boolean {
+        val existingCategories = categoryActivityViewModel.getAllCategories().value
+        existingCategories?.let { categories ->
+            for (category in categories) {
+                if (category.categoryName.equals(categoryName, ignoreCase = true)) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 }

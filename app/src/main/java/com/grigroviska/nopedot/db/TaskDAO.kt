@@ -24,6 +24,9 @@ interface TaskDAO {
     @Query("SELECT * FROM Task WHERE title LIKE '%' || :query || '%' OR subItems LIKE '%' || :query || '%' OR category LIKE '%' || :query || '%' ORDER BY id DESC")
     fun searchTask(query: String): LiveData<List<Task>>
 
+    @Query("SELECT * FROM Task Where category LIKE '%' || :query || '%' ORDER BY id DESC")
+    fun searchTasksByCategory(query: String): LiveData<List<Task>>
+
     @Delete
     suspend fun deleteTask(task: Task)
 

@@ -1,15 +1,14 @@
 package com.grigroviska.nopedot.fragments
 
 import android.app.AlarmManager
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.Color
 import android.os.Bundle
-import android.text.Editable
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -38,17 +37,17 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.grigroviska.nopedot.R
 import com.grigroviska.nopedot.activities.HomeScreen
-import com.grigroviska.nopedot.adapters.RvNotesAdapter
 import com.grigroviska.nopedot.adapters.RvTaskCategoryAdapter
 import com.grigroviska.nopedot.adapters.RvTasksAdapter
 import com.grigroviska.nopedot.databinding.FragmentTaskFeedBinding
+import com.grigroviska.nopedot.model.Category
 import com.grigroviska.nopedot.model.Task
 import com.grigroviska.nopedot.receiver.AlarmReceiver
 import com.grigroviska.nopedot.utils.SwipeToDelete
 import com.grigroviska.nopedot.utils.hideKeyboard
+import com.grigroviska.nopedot.viewModel.CategoryActivityViewModel
 import com.grigroviska.nopedot.viewModel.TaskActivityViewModel
 import java.text.SimpleDateFormat
-import java.util.ArrayList
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -61,11 +60,11 @@ class TaskFeedFragment : Fragment() {
     private lateinit var dialog : BottomSheetDialog
     private lateinit var rvAdapter: RvTasksAdapter
     private lateinit var rvCategory: RvTaskCategoryAdapter
-    lateinit var categories : ArrayList<String>
     private val openedEditTextList = mutableListOf<EditText>()
     var selectedLastDate : String = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
     var selectedLastTime : String = "No"
     private val taskActivityViewModel : TaskActivityViewModel by activityViewModels()
+    private val categoryActivityViewModel : CategoryActivityViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,6 +85,7 @@ class TaskFeedFragment : Fragment() {
         val navController= Navigation.findNavController(view)
         requireView().hideKeyboard()
 
+        insertDefaultCategoriesIfNotExist()
         swipeToDelete(binding.rvTask)
         try{
         recyclerViewDisplay() }
@@ -94,11 +94,11 @@ class TaskFeedFragment : Fragment() {
 
         }
 
-        categories = ArrayList()
-        categories.add("Work")
-        categories.add("Personal")
-        categories.add("Wishlist")
-        categories.add("Shopping")
+        binding.categoryMenu.setOnClickListener {
+
+            //CategoryManager adında bir fragmenta geçiş yapılacak
+
+        }
 
         binding.floatingActionButton.setOnClickListener {
             showBottomSheet()
@@ -109,6 +109,7 @@ class TaskFeedFragment : Fragment() {
             override fun onQueryTextSubmit(query: String?): Boolean {
 
                 if (!query.isNullOrEmpty()) {
+
                     val searchText = "%$query"
                     taskActivityViewModel.searchTask(searchText).observe(viewLifecycleOwner) { tasks ->
                         rvAdapter.submitList(tasks)
@@ -150,25 +151,7 @@ class TaskFeedFragment : Fragment() {
         val newTask : EditText = dialogView.findViewById<EditText>(R.id.newTask)
         val taskContainer = dialogView.findViewById<LinearLayout>(R.id.taskContainer)
 
-        category.setOnClickListener {
-
-            val popupMenu = PopupMenu(requireContext(), it)
-            for (category in categories) {
-                popupMenu.menu.add(category)
-            }
-            popupMenu.menu.add("New Category")
-            popupMenu.setOnMenuItemClickListener { item ->
-                val categoryName = item.title.toString()
-                if (categoryName == "Yeni kategori ekle") {
-
-                } else {
-                    category.text = categoryName
-                }
-                true
-            }
-            popupMenu.show()
-
-        }
+        setupCategorySelection(category)
 
         branchImageView.setOnClickListener {
             val newEditText = EditText(requireContext())
@@ -280,6 +263,57 @@ class TaskFeedFragment : Fragment() {
         dialog.show()
     }
 
+    private fun setupCategorySelection(categoryButton: MaterialButton) {
+        categoryActivityViewModel.getAllCategories().observe(viewLifecycleOwner) { categories ->
+            val popupMenu = PopupMenu(requireContext(), categoryButton)
+            categories.forEach { category ->
+                popupMenu.menu.add(category.categoryName)
+            }
+            popupMenu.menu.add("New Category")
+            popupMenu.setOnMenuItemClickListener { item ->
+                val categoryName = item.title.toString()
+                if (categoryName == "New Category") {
+                    showNewCategoryDialog()
+                } else {
+                    categoryButton.text = categoryName
+                }
+                true
+            }
+            categoryButton.setOnClickListener { popupMenu.show() }
+        }
+    }
+
+    private fun showNewCategoryDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.create_new_category, null)
+        val newCategoryNameEditText = dialogView.findViewById<EditText>(R.id.newCategory)
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        dialogView.findViewById<TextView>(R.id.save).setOnClickListener {
+            val newCategoryName = newCategoryNameEditText.text.toString().trim()
+
+            if (newCategoryName.isNotEmpty()) {
+                if (isExistingCategory(newCategoryName)) {
+                    Toast.makeText(requireContext(), "Category already exists.", Toast.LENGTH_SHORT).show()
+                } else {
+                    val newCategory = Category(0, newCategoryName)
+                    categoryActivityViewModel.saveCategory(newCategory)
+                    dialog.dismiss()
+                }
+            } else {
+                Toast.makeText(requireContext(), "Please enter a category name.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        dialogView.findViewById<TextView>(R.id.cancel).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
     private fun swipeToDelete(rvNote: RecyclerView) {
 
         val swipeToDeleteCallback = object : SwipeToDelete(){
@@ -349,16 +383,35 @@ class TaskFeedFragment : Fragment() {
 
         try {
             binding.rvTask.apply {
-                layoutManager= StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
+                layoutManager =
+                    StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
                 setHasFixedSize(true)
-                rvAdapter= RvTasksAdapter(taskActivityViewModel)
-                rvAdapter.stateRestorationPolicy=
+                rvAdapter = RvTasksAdapter(taskActivityViewModel)
+                rvAdapter.stateRestorationPolicy =
                     RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-                adapter=rvAdapter
+                adapter = rvAdapter
                 postponeEnterTransition(300L, TimeUnit.MILLISECONDS)
                 viewTreeObserver.addOnPreDrawListener {
                     startPostponedEnterTransition()
                     true
+                }
+
+                binding.rvTaskCategory.apply {
+                    layoutManager =
+                        LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                    setHasFixedSize(true)
+
+                    categoryActivityViewModel.getAllCategories()
+                        .observe(viewLifecycleOwner) { categories ->
+                            val categoryAdapter = RvTaskCategoryAdapter(
+                                taskActivityViewModel,
+                                viewLifecycleOwner,
+                                RvTasksAdapter(taskActivityViewModel)
+                            )
+                            adapter = categoryAdapter
+
+                            categoryAdapter.setCategories(categories)
+                        }
                 }
             }
         }catch (e: Exception){
@@ -371,24 +424,6 @@ class TaskFeedFragment : Fragment() {
 
     }
 
-    /*private fun alarm(taskName : String, taskValue : String, year : Int, month : Int, day : Int, hour : Int, minute : Int){
-        val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        val intent = Intent(requireContext(), AlarmReceiver::class.java)
-
-        intent.putExtra(taskName, taskValue)
-
-        val pendingIntent = PendingIntent.getBroadcast(
-            requireContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        val calendar = Calendar.getInstance()
-        calendar.set(year, month, day, hour, minute)
-
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
-
-    }*/
-
     private fun observerDataChanges() {
         taskActivityViewModel.getAllTasks().observe(viewLifecycleOwner){list->
             binding.noData.isVisible = list.isEmpty()
@@ -396,5 +431,31 @@ class TaskFeedFragment : Fragment() {
         }
     }
 
+    private fun insertDefaultCategoriesIfNotExist() {
+        val defaultCategories = listOf("Work", "Personal", "Wishlist", "Shopping")
+
+        val existingCategories = categoryActivityViewModel.getAllCategories()
+        existingCategories.observe(viewLifecycleOwner) { categories ->
+            val existingCategoryNames = categories.map { it.categoryName }
+
+            val newCategories = defaultCategories.filter { !existingCategoryNames.contains(it) }
+            newCategories.forEach { categoryName ->
+                val category = Category(0, categoryName)
+                categoryActivityViewModel.saveCategory(category)
+            }
+        }
+    }
+
+    private fun isExistingCategory(categoryName: String): Boolean {
+        val existingCategories = categoryActivityViewModel.getAllCategories().value
+        existingCategories?.let { categories ->
+            for (category in categories) {
+                if (category.categoryName.equals(categoryName, ignoreCase = true)) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
 
 }

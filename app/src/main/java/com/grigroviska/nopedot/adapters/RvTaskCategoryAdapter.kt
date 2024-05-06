@@ -1,36 +1,60 @@
 package com.grigroviska.nopedot.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.lifecycle.LifecycleOwner
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.grigroviska.nopedot.R
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
+import com.grigroviska.nopedot.databinding.CategoryItemLayoutBinding
+import com.grigroviska.nopedot.model.Category
+import com.grigroviska.nopedot.viewModel.TaskActivityViewModel
 
-class RvTaskCategoryAdapter(private val categories: List<String>) : RecyclerView.Adapter<RvTaskCategoryAdapter.CategoryViewHolder>() {
-    inner class CategoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val categoryTextView: TextView = itemView.findViewById(R.id.category_name)
+class RvTaskCategoryAdapter (
+    private val taskActivityViewModel: TaskActivityViewModel,
+    private val viewLifecycleOwner: LifecycleOwner,
+    private val rvAdapter: RvTasksAdapter
+) :
+    ListAdapter<Category, RvTaskCategoryAdapter.CategoryViewHolder>(CategoryDiffUtilCallback()) {
 
-        fun bind(category: String) {
-            categoryTextView.text = category
+    inner class CategoryViewHolder(private val binding: CategoryItemLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
+        private lateinit var category: Category
+        val categoryTitle : MaterialButton = binding.categoryName
+        val categoryParent : MaterialCardView = binding.categoryParent
+
+        fun bind(category: Category) {
+            this.category = category
+            categoryTitle.text = category.categoryName
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.category_item_layout, parent, false)
-        return CategoryViewHolder(view)
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = CategoryItemLayoutBinding.inflate(inflater, parent, false)
+        return CategoryViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
-        val category = categories[position]
+        val category = getItem(position)
         holder.bind(category)
 
-        holder.itemView.setOnClickListener {
-            // Kategoriye tıklama işlemleri burada yapılabilir
+        getItem(position).let { task ->
+            holder.apply {
+
+                categoryParent.setOnClickListener {
+                    val categoryName = category.categoryName
+                    taskActivityViewModel.searchTasksByCategory(categoryName)
+                        .observe(viewLifecycleOwner) { tasks ->
+                            rvAdapter.submitList(tasks)
+                        }
+                }
+            }
         }
     }
 
-    override fun getItemCount(): Int {
-        return categories.size
+    fun setCategories(categories: List<Category>) {
+        submitList(categories)
     }
-}
+
+    }

@@ -15,10 +15,14 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.grigroviska.nopedot.R
 import com.grigroviska.nopedot.databinding.ActivityHomeScreenBinding
+import com.grigroviska.nopedot.db.CategoryDatabase
 import com.grigroviska.nopedot.db.NoteDatabase
 import com.grigroviska.nopedot.db.TaskDatabase
+import com.grigroviska.nopedot.repository.CategoryRepository
 import com.grigroviska.nopedot.repository.NoteRepository
 import com.grigroviska.nopedot.repository.TaskRepository
+import com.grigroviska.nopedot.viewModel.CategoryActivityViewModel
+import com.grigroviska.nopedot.viewModel.CategoryActivityViewModelFactory
 import com.grigroviska.nopedot.viewModel.NoteActivityViewModel
 import com.grigroviska.nopedot.viewModel.NoteActivityViewModelFactory
 import com.grigroviska.nopedot.viewModel.TaskActivityViewModel
@@ -28,6 +32,7 @@ class HomeScreen : AppCompatActivity() {
 
     lateinit var noteActivityViewModel: NoteActivityViewModel
     lateinit var taskActivityViewModel: TaskActivityViewModel
+    lateinit var categoryActivityViewModel: CategoryActivityViewModel
     private lateinit var binding: ActivityHomeScreenBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,12 +44,17 @@ class HomeScreen : AppCompatActivity() {
             setContentView(view)
             val noteRepository = NoteRepository(NoteDatabase(this))
             val taskRepository = TaskRepository(TaskDatabase(this))
+            val categoryRepository = CategoryRepository(CategoryDatabase(this))
             val noteActivityViewModelFactory = NoteActivityViewModelFactory(noteRepository)
             val taskActivityViewModelFactory = TaskActivityViewModelFactory(taskRepository)
+            val categoryActivityViewModelFactory = CategoryActivityViewModelFactory(categoryRepository)
+
             noteActivityViewModel = ViewModelProvider(this,
                 noteActivityViewModelFactory)[NoteActivityViewModel::class.java]
             taskActivityViewModel = ViewModelProvider(this,
                 taskActivityViewModelFactory)[TaskActivityViewModel::class.java]
+            categoryActivityViewModel = ViewModelProvider(this,
+                categoryActivityViewModelFactory)[CategoryActivityViewModel::class.java]
 
             try {
                 val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment

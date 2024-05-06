@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.grigroviska.nopedot.model.Task
+import com.grigroviska.nopedot.repository.CategoryRepository
 import com.grigroviska.nopedot.repository.TaskRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,6 +30,10 @@ class TaskActivityViewModel(private val repository: TaskRepository) : ViewModel(
     fun searchTask(query: String): LiveData<List<Task>>
     {
         return repository.searchTask(query)
+    }
+
+    fun searchTasksByCategory(categoryName: String): LiveData<List<Task>> {
+        return repository.searchTasksByCategory(categoryName)
     }
 
     fun getAllTasks(): LiveData<List<Task>> = repository.getTask()
