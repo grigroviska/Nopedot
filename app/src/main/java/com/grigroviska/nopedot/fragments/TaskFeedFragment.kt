@@ -26,7 +26,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -36,7 +35,6 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.grigroviska.nopedot.R
-import com.grigroviska.nopedot.activities.HomeScreen
 import com.grigroviska.nopedot.adapters.RvTaskCategoryAdapter
 import com.grigroviska.nopedot.adapters.RvTasksAdapter
 import com.grigroviska.nopedot.databinding.FragmentTaskFeedBinding
@@ -59,10 +57,10 @@ class TaskFeedFragment : Fragment() {
     private lateinit var binding : FragmentTaskFeedBinding
     private lateinit var dialog : BottomSheetDialog
     private lateinit var rvAdapter: RvTasksAdapter
-    private lateinit var rvCategory: RvTaskCategoryAdapter
+
     private val openedEditTextList = mutableListOf<EditText>()
-    var selectedLastDate : String = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
-    var selectedLastTime : String = "No"
+    private var selectedLastDate : String = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
+    private var selectedLastTime : String = "No"
     private val taskActivityViewModel : TaskActivityViewModel by activityViewModels()
     private val categoryActivityViewModel : CategoryActivityViewModel by activityViewModels()
 
@@ -81,8 +79,8 @@ class TaskFeedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentTaskFeedBinding.bind(view)
-        val activity= activity as HomeScreen
-        val navController= Navigation.findNavController(view)
+        //val activity= activity as HomeScreen
+        //val navController= Navigation.findNavController(view)
         requireView().hideKeyboard()
 
         insertDefaultCategoriesIfNotExist()
@@ -96,8 +94,6 @@ class TaskFeedFragment : Fragment() {
 
         binding.categoryMenu.setOnClickListener {
 
-            //CategoryManager adında bir fragmenta geçiş yapılacak
-
         }
 
         binding.floatingActionButton.setOnClickListener {
@@ -109,7 +105,6 @@ class TaskFeedFragment : Fragment() {
             override fun onQueryTextSubmit(query: String?): Boolean {
 
                 if (!query.isNullOrEmpty()) {
-
                     val searchText = "%$query"
                     taskActivityViewModel.searchTask(searchText).observe(viewLifecycleOwner) { tasks ->
                         rvAdapter.submitList(tasks)
@@ -144,11 +139,11 @@ class TaskFeedFragment : Fragment() {
         dialog.setContentView(dialogView)
 
         val branchImageView = dialogView.findViewById<ImageView>(R.id.branch)
-        val calendarImageView : ImageView = dialogView.findViewById<ImageView>(R.id.calendar)
-        val save : MaterialButton = dialogView.findViewById<MaterialButton>(R.id.saveTask)
-        val category: MaterialButton = dialogView.findViewById<MaterialButton>(R.id.category)
-        val calendarText : TextView = dialogView.findViewById<TextView>(R.id.calendarText)
-        val newTask : EditText = dialogView.findViewById<EditText>(R.id.newTask)
+        val calendarImageView : ImageView = dialogView.findViewById(R.id.calendar)
+        val save : MaterialButton = dialogView.findViewById(R.id.saveTask)
+        val category: MaterialButton = dialogView.findViewById(R.id.category)
+        val calendarText : TextView = dialogView.findViewById(R.id.calendarText)
+        val newTask : EditText = dialogView.findViewById(R.id.newTask)
         val taskContainer = dialogView.findViewById<LinearLayout>(R.id.taskContainer)
 
         setupCategorySelection(category)
@@ -241,7 +236,9 @@ class TaskFeedFragment : Fragment() {
                     if (selectedLastDate != "No" && selectedLastTime != "No") {
                         val calendar = Calendar.getInstance().apply {
                             val dateTime = SimpleDateFormat("dd.MM.yyyy hh:mm:ss", Locale.getDefault()).parse("$selectedLastDate $selectedLastTime")
-                            time = dateTime
+                            if (dateTime != null) {
+                                time = dateTime
+                            }
                         }
                         val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
                         val intent = Intent(context, AlarmReceiver::class.java).apply {
@@ -273,7 +270,7 @@ class TaskFeedFragment : Fragment() {
             popupMenu.setOnMenuItemClickListener { item ->
                 val categoryName = item.title.toString()
                 if (categoryName == "New Category") {
-                    showNewCategoryDialog()
+                    showNewCategoryDialog(categoryButton)
                 } else {
                     categoryButton.text = categoryName
                 }
@@ -283,7 +280,7 @@ class TaskFeedFragment : Fragment() {
         }
     }
 
-    private fun showNewCategoryDialog() {
+    private fun showNewCategoryDialog(category: MaterialButton) {
         val dialogView = layoutInflater.inflate(R.layout.create_new_category, null)
         val newCategoryNameEditText = dialogView.findViewById<EditText>(R.id.newCategory)
 
@@ -295,12 +292,15 @@ class TaskFeedFragment : Fragment() {
             val newCategoryName = newCategoryNameEditText.text.toString().trim()
 
             if (newCategoryName.isNotEmpty()) {
-                if (isExistingCategory(newCategoryName)) {
-                    Toast.makeText(requireContext(), "Category already exists.", Toast.LENGTH_SHORT).show()
-                } else {
-                    val newCategory = Category(0, newCategoryName)
-                    categoryActivityViewModel.saveCategory(newCategory)
-                    dialog.dismiss()
+                categoryActivityViewModel.getCategoryByName(newCategoryName).observe(viewLifecycleOwner) { categories ->
+                    if (categories.isEmpty()) {
+                        val newCategory = Category(0, newCategoryName)
+                        categoryActivityViewModel.saveCategory(newCategory)
+                        dialog.dismiss()
+                    } else {
+                        category.text = newCategoryName
+                        dialog.dismiss()
+                    }
                 }
             } else {
                 Toast.makeText(requireContext(), "Please enter a category name.", Toast.LENGTH_SHORT).show()
@@ -313,6 +313,7 @@ class TaskFeedFragment : Fragment() {
 
         dialog.show()
     }
+
 
     private fun swipeToDelete(rvNote: RecyclerView) {
 
@@ -451,7 +452,7 @@ class TaskFeedFragment : Fragment() {
         existingCategories?.let { categories ->
             for (category in categories) {
                 if (category.categoryName.equals(categoryName, ignoreCase = true)) {
-                    return true
+                    return false
                 }
             }
         }

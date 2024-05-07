@@ -26,6 +26,10 @@ class CategoryActivityViewModel(private val repository: CategoryRepository) : Vi
         return repository.searchCategory(query)
     }
 
+    fun getCategoryByName(query: String): LiveData<List<Category>> {
+        return repository.getCategoryByName(query)
+    }
+
     fun getAllCategories(): LiveData<List<Category>> = repository.getCategory()
 
 }

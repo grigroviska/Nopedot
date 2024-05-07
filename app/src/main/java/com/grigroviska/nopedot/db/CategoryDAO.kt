@@ -24,6 +24,8 @@ interface CategoryDAO {
     @Query("SELECT * FROM Category WHERE categoryName LIKE '%' || :categoryName || '%' ORDER BY id DESC")
     fun searchCategory(categoryName: String): LiveData<List<Category>>
 
+    @Query("SELECT * FROM Category WHERE categoryName = :name")
+    fun getCategoryByName(name: String): LiveData<List<Category>>
 
     @Delete
     suspend fun deleteCategory(category: Category)

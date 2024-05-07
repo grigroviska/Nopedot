@@ -15,4 +15,5 @@ class CategoryRepository(private val db: CategoryDatabase) {
 
     suspend fun deleteCategory(category: Category) = db.getCategoryDao().deleteCategory(category)
 
+    fun getCategoryByName(category: String) = db.getCategoryDao().getCategoryByName(category)
 }
