@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/note"
+        android:icon="@drawable/note"
+        android:iconTint="@color/secondaryColor"
+        app:showAsAction="ifRoom"
+        android:title="Note" />
+
+    <item
+        android:id="@+id/task"
+        android:icon="@drawable/task"
+        android:iconTint="@color/secondaryColor"
+        app:showAsAction="ifRoom"
+        android:title="Task"/>
+
+    <item
+        android:id="@+id/subscription"
+        android:icon="@drawable/wallet"
+        android:iconTint="@color/secondaryColor"
+        app:showAsAction="ifRoom"
+        android:title="Subscription"/>
+
+    <item
+        android:id="@+id/settings"
+        android:title="Settings"
+        android:icon="@drawable/settings"
+        android:iconTint="@color/secondaryColor"
+        app:showAsAction="ifRoom" />
+</menu>

@@ -13,42 +13,11 @@
         android:background="@color/backgroundColor"
         tools:context=".fragments.TaskFeedFragment">
 
-        <LinearLayout
-            android:id="@+id/categoryBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvTaskCategory"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:background="@null"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/category_item_layout"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/categoryMenu" />
-
-            <ImageView
-                android:id="@+id/categoryMenu"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/menu"
-                android:backgroundTint="@color/secondaryColor"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                app:tint="@color/secondaryColor" />
-        </LinearLayout>
-
         <SearchView
             android:id="@+id/searchView"
             android:layout_width="340dp"
             android:layout_height="50dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="15dp"
             android:queryBackground="@null"
             android:background="@drawable/rounded_searchview_background"
             android:drawablePadding="5dp"
@@ -60,14 +29,13 @@
             android:queryHint="@string/search_task"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/categoryBar" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvTask"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:clipToPadding="false"
-            android:paddingStart="6dp"
             android:paddingTop="10dp"
             android:paddingBottom="5dp"
             android:transitionGroup="true"

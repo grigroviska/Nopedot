@@ -13,6 +13,7 @@
         tools:context=".activities.HomeScreen"
         android:background="@color/backgroundColor">
 
+        <!--
         <RelativeLayout
             android:id="@+id/topBar"
             android:layout_width="match_parent"
@@ -70,7 +71,7 @@
                 android:src="@drawable/settings"
               />
 
-        </RelativeLayout>
+        </RelativeLayout>-->
 
         <!--<com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topBar"
@@ -123,10 +124,10 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:id="@+id/parentLayout"
-            app:layout_constraintTop_toBottomOf="@id/topBar"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintBottom_toTopOf="@id/bottomAppBar">
 
             <androidx.fragment.app.FragmentContainerView
                 android:layout_width="match_parent"
@@ -137,6 +138,22 @@
                 app:navGraph="@navigation/nav_graph"/>
 
         </FrameLayout>
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            app:navigationIcon="@drawable/menu"
+            app:navigationIconTint="@color/secondaryColor"
+            app:itemRippleColor="@color/secondaryColor"
+            app:titleTextColor="@color/secondaryColor"
+            android:backgroundTint="@color/thirdColor"
+            app:menu="@menu/bottom_app_bar"
+            app:layout_constraintTop_toBottomOf="@id/parentLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

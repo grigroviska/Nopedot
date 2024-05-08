@@ -167,6 +167,7 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
                 rightMargin = resources.getDimensionPixelSize(R.dimen.margin_end)
             }
             newEditText.hint = "New subtext"
+            newEditText.requestFocus()
             newEditText.background = null
 
             openedEditTextList.add(newEditText)

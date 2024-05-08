@@ -18,7 +18,7 @@ interface TaskDAO {
     @Update
     suspend fun updateTask(task: Task)
 
-    @Query("SELECT * FROM Task ORDER BY id DESC")
+    @Query("SELECT * FROM Task ORDER BY CASE WHEN done = 0 THEN 0 ELSE 1 END, id DESC")
     fun getAllTask(): LiveData<List<Task>>
 
     @Query("SELECT * FROM Task WHERE title LIKE '%' || :query || '%' OR subItems LIKE '%' || :query || '%' OR category LIKE '%' || :query || '%' ORDER BY id DESC")

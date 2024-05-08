@@ -74,4 +74,5 @@
     <string name="are_you_sure_you_want_to_delete_this_sub_item">Are you sure you want to delete this sub item?</string>
     <string name="yes">Yes</string>
     <string name="reminder">Reminder: %1$s</string>
+    <string name="completed">Completed</string>
 </resources>

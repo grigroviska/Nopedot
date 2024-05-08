@@ -40,12 +40,13 @@ class NoteFeedFragment : Fragment(R.layout.fragment_note_feed) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        exitTransition= MaterialElevationScale(false).apply {
-            duration=350
-        }
-        enterTransition=MaterialElevationScale(true).apply {
-            duration=350
-        }
+        val enterAnim = R.anim.enter_from_right
+        val exitAnim = R.anim.exit_to_left
+
+        val transaction = requireFragmentManager().beginTransaction()
+        transaction.setCustomAnimations(enterAnim, exitAnim)
+
+        transaction.commit()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

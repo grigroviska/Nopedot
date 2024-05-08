@@ -47,6 +47,7 @@ import com.grigroviska.nopedot.viewModel.CategoryActivityViewModel
 import com.grigroviska.nopedot.viewModel.TaskActivityViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Collections
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -66,6 +67,7 @@ class TaskFeedFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
     }
 
     override fun onCreateView(
@@ -81,6 +83,7 @@ class TaskFeedFragment : Fragment() {
         binding = FragmentTaskFeedBinding.bind(view)
         //val activity= activity as HomeScreen
         //val navController= Navigation.findNavController(view)
+
         requireView().hideKeyboard()
 
         insertDefaultCategoriesIfNotExist()
@@ -89,10 +92,6 @@ class TaskFeedFragment : Fragment() {
         recyclerViewDisplay() }
         catch (e: Exception){
             Log.e("Hata", "ff" ,e)
-
-        }
-
-        binding.categoryMenu.setOnClickListener {
 
         }
 
@@ -157,7 +156,7 @@ class TaskFeedFragment : Fragment() {
                 topMargin = resources.getDimensionPixelSize(R.dimen.margin_top)
             }
             newEditText.hint = "New subtext"
-
+            newEditText.requestFocus()
             openedEditTextList.add(newEditText)
 
             val removeIcon = AppCompatResources.getDrawable(requireContext(), R.drawable.remove)
@@ -315,7 +314,7 @@ class TaskFeedFragment : Fragment() {
     }
 
 
-    private fun swipeToDelete(rvNote: RecyclerView) {
+    private fun swipeToDelete(rvTask: RecyclerView) {
 
         val swipeToDeleteCallback = object : SwipeToDelete(){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -362,7 +361,7 @@ class TaskFeedFragment : Fragment() {
             }
         }
         val itemTouchHelper= ItemTouchHelper(swipeToDeleteCallback)
-        itemTouchHelper.attachToRecyclerView(rvNote)
+        itemTouchHelper.attachToRecyclerView(rvTask)
     }
 
     private fun getOpenedEditTexts(): MutableList<String> {
@@ -387,32 +386,15 @@ class TaskFeedFragment : Fragment() {
                 layoutManager =
                     StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
                 setHasFixedSize(true)
-                rvAdapter = RvTasksAdapter(taskActivityViewModel)
+                rvAdapter = RvTasksAdapter(taskActivityViewModel, requireContext())
                 rvAdapter.stateRestorationPolicy =
                     RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
                 adapter = rvAdapter
+
                 postponeEnterTransition(300L, TimeUnit.MILLISECONDS)
                 viewTreeObserver.addOnPreDrawListener {
                     startPostponedEnterTransition()
                     true
-                }
-
-                binding.rvTaskCategory.apply {
-                    layoutManager =
-                        LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-                    setHasFixedSize(true)
-
-                    categoryActivityViewModel.getAllCategories()
-                        .observe(viewLifecycleOwner) { categories ->
-                            val categoryAdapter = RvTaskCategoryAdapter(
-                                taskActivityViewModel,
-                                viewLifecycleOwner,
-                                RvTasksAdapter(taskActivityViewModel)
-                            )
-                            adapter = categoryAdapter
-
-                            categoryAdapter.setCategories(categories)
-                        }
                 }
             }
         }catch (e: Exception){
@@ -445,18 +427,6 @@ class TaskFeedFragment : Fragment() {
                 categoryActivityViewModel.saveCategory(category)
             }
         }
-    }
-
-    private fun isExistingCategory(categoryName: String): Boolean {
-        val existingCategories = categoryActivityViewModel.getAllCategories().value
-        existingCategories?.let { categories ->
-            for (category in categories) {
-                if (category.categoryName.equals(categoryName, ignoreCase = true)) {
-                    return false
-                }
-            }
-        }
-        return false
     }
 
 }

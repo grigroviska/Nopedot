@@ -11,10 +11,9 @@ import com.grigroviska.nopedot.databinding.CategoryItemLayoutBinding
 import com.grigroviska.nopedot.model.Category
 import com.grigroviska.nopedot.viewModel.TaskActivityViewModel
 
-class RvTaskCategoryAdapter (
-    private val taskActivityViewModel: TaskActivityViewModel,
-    private val viewLifecycleOwner: LifecycleOwner,
-    private val rvAdapter: RvTasksAdapter
+class RvTaskCategoryAdapter (private val taskActivityViewModel: TaskActivityViewModel,
+                             private val viewLifecycleOwner: LifecycleOwner,
+                             private val rvAdapter: RvTasksAdapter
 ) :
     ListAdapter<Category, RvTaskCategoryAdapter.CategoryViewHolder>(CategoryDiffUtilCallback()) {
 
@@ -39,18 +38,28 @@ class RvTaskCategoryAdapter (
         val category = getItem(position)
         holder.bind(category)
 
-        getItem(position).let { task ->
+        getItem(position).let {category ->
+
             holder.apply {
+                val categoryName = category.categoryName
 
                 categoryParent.setOnClickListener {
-                    val categoryName = category.categoryName
                     taskActivityViewModel.searchTasksByCategory(categoryName)
-                        .observe(viewLifecycleOwner) { tasks ->
-                            rvAdapter.submitList(tasks)
+                        .observe(viewLifecycleOwner) { filteredTasks ->
+                            rvAdapter.submitList(filteredTasks)
+                        }
+                }
+
+                categoryTitle.setOnClickListener {
+                    taskActivityViewModel.searchTasksByCategory(categoryName)
+                        .observe(viewLifecycleOwner) { filteredTasks ->
+                            rvAdapter.submitList(filteredTasks)
                         }
                 }
             }
+
         }
+
     }
 
     fun setCategories(categories: List<Category>) {
