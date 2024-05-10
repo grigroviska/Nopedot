@@ -12,10 +12,18 @@
         tools:layout="@layout/fragment_note_feed" >
         <action
             android:id="@+id/action_noteFeedFragment_to_createNoteFragment"
-            app:destination="@id/createNoteFragment"/>
+            app:destination="@id/createNoteFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_noteFeedFragment_to_taskFeedFragment"
-            app:destination="@id/taskFeedFragment" />
+            app:destination="@id/taskFeedFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/createNoteFragment"
@@ -24,7 +32,11 @@
         tools:layout="@layout/fragment_create_note" >
         <action
             android:id="@+id/action_createNoteFragment_to_noteFeedFragment"
-            app:destination="@id/noteFeedFragment" />
+            app:destination="@id/noteFeedFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
 
         <argument android:name="note"
             android:defaultValue="@null"
@@ -38,10 +50,18 @@
         tools:layout="@layout/fragment_task_feed" >
         <action
             android:id="@+id/action_taskFeedFragment_to_noteFeedFragment"
-            app:destination="@id/noteFeedFragment" />
+            app:destination="@id/noteFeedFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
         <action
             android:id="@+id/action_taskFeedFragment_to_createTaskFragment"
-            app:destination="@id/createTaskFragment" />
+            app:destination="@id/createTaskFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/createTaskFragment"
@@ -50,7 +70,11 @@
         tools:layout="@layout/fragment_create_task" >
         <action
             android:id="@+id/action_createTaskFragment_to_taskFeedFragment"
-            app:destination="@id/taskFeedFragment" />
+            app:destination="@id/taskFeedFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
 
         <argument android:name="task"
             android:defaultValue="@null"

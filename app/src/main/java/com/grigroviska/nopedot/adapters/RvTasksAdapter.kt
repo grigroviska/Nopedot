@@ -31,6 +31,7 @@ class RvTasksAdapter(private val taskActivityViewModel: TaskActivityViewModel, p
         private val contentBinding = TaskItemLayoutBinding.bind(itemView)
         val title: TextView = contentBinding.taskCheckBox
         val taskItem: MaterialCardView = contentBinding.taskItemLayout
+        val colorLayout: RelativeLayout = contentBinding.colorLayout
         val day : TextView = contentBinding.day
         val month : TextView = contentBinding.month
         val year : TextView = contentBinding.year
@@ -59,10 +60,12 @@ class RvTasksAdapter(private val taskActivityViewModel: TaskActivityViewModel, p
                 day.text = task.day
                 month.text = getMonthName(task.month.toInt())
                 year.text = task.year
+                completedLayout.visibility = View.GONE
                 val subItemsText = task.subItems.joinToString("\n") { "\u2022 $it" }
                 holder.subItems.text = subItemsText
 
-                if (task.done && position == itemCount - 1) {
+                if (task.done && firstDoneTaskIndex == null ) {
+                    firstDoneTaskIndex = position
                     completedLayout.visibility = View.VISIBLE
                 } else {
                     completedLayout.visibility = View.GONE
@@ -82,6 +85,14 @@ class RvTasksAdapter(private val taskActivityViewModel: TaskActivityViewModel, p
                     } else {
                         paintFlags = paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
                         title.setTextColor(task.color)
+                    }
+                }
+
+                colorLayout.apply {
+                    if (task.done) {
+                        colorLayout.setBackgroundColor(resources.getColor(R.color.primaryColor))
+                    } else {
+                        colorLayout.setBackgroundColor(resources.getColor(R.color.thirdColor))
                     }
                 }
 

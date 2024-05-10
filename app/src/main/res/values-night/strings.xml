@@ -39,5 +39,8 @@
     <string name="yes">Yes</string>
     <string name="reminder">Reminder: %1$s</string>
     <string name="completed">Completed</string>
+    <string name="settings">Settings</string>
+    <string name="subscription">Subscription</string>
+    <string name="task">Task</string>
 
 </resources>

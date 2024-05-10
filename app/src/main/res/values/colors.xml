@@ -8,6 +8,8 @@
     <color name="thirdColor">#111111</color>
     <color name="doneColor">#888888</color>
     <color name="secondaryColor">#E6E3C2</color>
+    <color name="selectedColor">#BFB762</color>
+
 
 
     <!--color palette-->

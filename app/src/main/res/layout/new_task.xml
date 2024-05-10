@@ -15,8 +15,9 @@
         <EditText
             android:id="@+id/newTask"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:padding="5dp"
+            android:layout_height="60dp"
+            android:padding="10dp"
+            android:paddingStart="20dp"
             android:background="@color/primaryColor"
             android:textColor="@color/secondaryColor"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"

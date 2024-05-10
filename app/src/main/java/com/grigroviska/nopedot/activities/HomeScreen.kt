@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.replace
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.grigroviska.nopedot.R
@@ -28,13 +29,12 @@ import com.grigroviska.nopedot.viewModel.NoteActivityViewModelFactory
 import com.grigroviska.nopedot.viewModel.TaskActivityViewModel
 import com.grigroviska.nopedot.viewModel.TaskActivityViewModelFactory
 
-class HomeScreen : AppCompatActivity() {
+class HomeScreen : AppCompatActivity(){
 
-    lateinit var noteActivityViewModel: NoteActivityViewModel
-    lateinit var taskActivityViewModel: TaskActivityViewModel
-    lateinit var categoryActivityViewModel: CategoryActivityViewModel
+    private lateinit var noteActivityViewModel: NoteActivityViewModel
+    private lateinit var taskActivityViewModel: TaskActivityViewModel
+    private lateinit var categoryActivityViewModel: CategoryActivityViewModel
     private lateinit var binding: ActivityHomeScreenBinding
-    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,38 +42,41 @@ class HomeScreen : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-
-            val noteRepository = NoteRepository(NoteDatabase(this))
-            val taskRepository = TaskRepository(TaskDatabase(this))
-            val categoryRepository = CategoryRepository(CategoryDatabase(this))
-            val noteActivityViewModelFactory = NoteActivityViewModelFactory(noteRepository)
-            val taskActivityViewModelFactory = TaskActivityViewModelFactory(taskRepository)
-            val categoryActivityViewModelFactory = CategoryActivityViewModelFactory(categoryRepository)
-
-            noteActivityViewModel = ViewModelProvider(this,
-                noteActivityViewModelFactory)[NoteActivityViewModel::class.java]
-            taskActivityViewModel = ViewModelProvider(this,
-                taskActivityViewModelFactory)[TaskActivityViewModel::class.java]
-            categoryActivityViewModel = ViewModelProvider(this,
-                categoryActivityViewModelFactory)[CategoryActivityViewModel::class.java]
-
-                val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment
-                val navController = navHostFragment.navController
-
-                binding.bottomAppBar.setOnNavigationItemSelectedListener { menuItem ->
-                    when (menuItem.itemId) {
-                    R.id.note -> {
-                        navController.navigate(R.id.noteFeedFragment)
-                        true
-                    }
-                    R.id.task -> {
-                        navController.navigate(R.id.taskFeedFragment)
-                        true
-                }
-                    else -> false
-            }
+        val openFragment = intent.getStringExtra("OPEN_FRAGMENT")
+        if (openFragment == "Task_Feed_Fragment") {
+            replaceFragment(TaskFeedFragment())
         }
 
+        val noteRepository = NoteRepository(NoteDatabase(this))
+        val taskRepository = TaskRepository(TaskDatabase(this))
+        val categoryRepository = CategoryRepository(CategoryDatabase(this))
+        val noteActivityViewModelFactory = NoteActivityViewModelFactory(noteRepository)
+        val taskActivityViewModelFactory = TaskActivityViewModelFactory(taskRepository)
+        val categoryActivityViewModelFactory = CategoryActivityViewModelFactory(categoryRepository)
+
+        noteActivityViewModel = ViewModelProvider(this,
+            noteActivityViewModelFactory)[NoteActivityViewModel::class.java]
+        taskActivityViewModel = ViewModelProvider(this,
+            taskActivityViewModelFactory)[TaskActivityViewModel::class.java]
+        categoryActivityViewModel = ViewModelProvider(this,
+            categoryActivityViewModelFactory)[CategoryActivityViewModel::class.java]
+
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+
+        binding.bottomAppBar.setOnNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.note -> {
+                    navController.navigate(R.id.noteFeedFragment)
+                    true
+                }
+                R.id.task -> {
+                    navController.navigate(R.id.taskFeedFragment)
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     private fun replaceFragment(fragment: Fragment){
@@ -101,6 +104,16 @@ class HomeScreen : AppCompatActivity() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onBackPressed() {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment)
+        if (currentFragment is NoteFeedFragment || currentFragment is TaskFeedFragment) {
+            super.onBackPressed()
+        } else {
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+            finish()
         }
     }
 
