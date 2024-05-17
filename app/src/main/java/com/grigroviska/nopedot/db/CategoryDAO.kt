@@ -12,7 +12,7 @@ import com.grigroviska.nopedot.model.Category
 @Dao
 interface CategoryDAO {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun addCategory(category: Category)
 
     @Update

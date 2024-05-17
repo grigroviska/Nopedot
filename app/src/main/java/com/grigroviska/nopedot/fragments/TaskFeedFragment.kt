@@ -26,8 +26,8 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -35,9 +35,11 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.grigroviska.nopedot.R
-import com.grigroviska.nopedot.adapters.RvTaskCategoryAdapter
+import com.grigroviska.nopedot.activities.HomeScreen
 import com.grigroviska.nopedot.adapters.RvTasksAdapter
 import com.grigroviska.nopedot.databinding.FragmentTaskFeedBinding
+import com.grigroviska.nopedot.listener.TaskItemClickListener
+import com.grigroviska.nopedot.viewModel.OnTaskSavedListener
 import com.grigroviska.nopedot.model.Category
 import com.grigroviska.nopedot.model.Task
 import com.grigroviska.nopedot.receiver.AlarmReceiver
@@ -47,13 +49,12 @@ import com.grigroviska.nopedot.viewModel.CategoryActivityViewModel
 import com.grigroviska.nopedot.viewModel.TaskActivityViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Collections
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 
-class TaskFeedFragment : Fragment() {
+class TaskFeedFragment : Fragment(), TaskItemClickListener {
 
     private lateinit var binding : FragmentTaskFeedBinding
     private lateinit var dialog : BottomSheetDialog
@@ -61,7 +62,7 @@ class TaskFeedFragment : Fragment() {
 
     private val openedEditTextList = mutableListOf<EditText>()
     private var selectedLastDate : String = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
-    private var selectedLastTime : String = "No"
+    private var selectedLastTime : String = ""
     private val taskActivityViewModel : TaskActivityViewModel by activityViewModels()
     private val categoryActivityViewModel : CategoryActivityViewModel by activityViewModels()
 
@@ -81,8 +82,8 @@ class TaskFeedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentTaskFeedBinding.bind(view)
-        //val activity= activity as HomeScreen
-        //val navController= Navigation.findNavController(view)
+        activity as HomeScreen
+        Navigation.findNavController(view)
 
         requireView().hideKeyboard()
 
@@ -91,7 +92,7 @@ class TaskFeedFragment : Fragment() {
         try{
         recyclerViewDisplay() }
         catch (e: Exception){
-            Log.e("Hata", "ff" ,e)
+            Toast.makeText(requireContext(), "Error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
 
         }
 
@@ -155,7 +156,7 @@ class TaskFeedFragment : Fragment() {
             ).apply {
                 topMargin = resources.getDimensionPixelSize(R.dimen.margin_top)
             }
-            newEditText.hint = "New subtext"
+            newEditText.hint = getString(R.string.new_subtext)
             newEditText.requestFocus()
             openedEditTextList.add(newEditText)
 
@@ -183,10 +184,10 @@ class TaskFeedFragment : Fragment() {
 
         val currentDate = Calendar.getInstance()
         val dayOfMonth = currentDate.get(Calendar.DAY_OF_MONTH)
-        calendarText.text = " $dayOfMonth"
+        calendarText.text = "$dayOfMonth"
         selectedLastDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(currentDate.time).toString()
         calendarImageView.setOnClickListener {
-            val currentDate = Calendar.getInstance()
+            val currentDate: Calendar = Calendar.getInstance()
             val year = currentDate.get(Calendar.YEAR)
             val month = currentDate.get(Calendar.MONTH)
             val day = currentDate.get(Calendar.DAY_OF_MONTH)
@@ -200,10 +201,10 @@ class TaskFeedFragment : Fragment() {
                     selectedDate.set(Calendar.MINUTE, selectedMinute)
 
                     val selectedDayOfMonth = selectedDate.get(Calendar.DAY_OF_MONTH)
-                    calendarText.text = " ${selectedDayOfMonth}"
+                    calendarText.text = "$selectedDayOfMonth"
 
                     selectedLastDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(selectedDate.time).toString()
-                    selectedLastTime = SimpleDateFormat("hh:mm:mm", Locale.getDefault()).format(selectedDate.time).toString()
+                    selectedLastTime = String.format("%02d:%02d", selectedHour, selectedMinute)
 
                 }, currentDate.get(Calendar.HOUR_OF_DAY), currentDate.get(Calendar.MINUTE), true)
 
@@ -229,32 +230,81 @@ class TaskFeedFragment : Fragment() {
                         }
                     }
 
-                    val task = Task(0,newTask.text.toString(), false, getOpenedEditTexts(), category.text.toString() , selectedLastDate, selectedLastTime, "No", -1)
-                    taskActivityViewModel.saveTask(task)
+                    val task = Task(
+                        0,
+                        newTask.text.toString(),
+                        false,
+                        getOpenedEditTexts(),
+                        category.text.toString(),
+                        selectedLastDate,
+                        selectedLastTime,
+                        "No",
+                        -1
+                    )
 
-                    if (selectedLastDate != "No" && selectedLastTime != "No") {
-                        val calendar = Calendar.getInstance().apply {
-                            val dateTime = SimpleDateFormat("dd.MM.yyyy hh:mm:ss", Locale.getDefault()).parse("$selectedLastDate $selectedLastTime")
-                            if (dateTime != null) {
-                                time = dateTime
+                    taskActivityViewModel.saveTask(task, object : OnTaskSavedListener {
+                        override fun onTaskSaved(taskWithId: Task) {
+                            val taskId = taskWithId.id
+                            if (taskId > 0) {
+
+                                if (selectedLastDate.isNotEmpty() && selectedLastTime.isNotEmpty()) {
+                                    try {
+                                        val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
+                                        val selectedDate = dateFormat.parse("$selectedLastDate $selectedLastTime")
+
+                                        selectedDate?.let {
+                                            val calendar = Calendar.getInstance().apply {
+                                                time = it
+                                            }
+
+                                            val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                                            val intent = Intent(context, AlarmReceiver::class.java).apply {
+                                                putExtra("TASK_NAME", newTask.text.toString())
+                                                putExtra("NOTIFICATION_ID", taskId)
+                                            }
+                                            val pendingIntent = PendingIntent.getBroadcast(
+                                                context,
+                                                taskId.toInt(),
+                                                intent,
+                                                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                                            )
+                                            alarmManager.set(
+                                                AlarmManager.RTC_WAKEUP,
+                                                calendar.timeInMillis,
+                                                pendingIntent
+                                            )
+                                            activity?.runOnUiThread {
+                                            }
+                                        } ?: run {
+                                            activity?.runOnUiThread {
+                                                Toast.makeText(requireContext(),
+                                                    getString(R.string.error_parsing_date_and_time), Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    } catch (e: Exception) {
+                                        activity?.runOnUiThread {
+                                            Toast.makeText(requireContext(), "Error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+                                        }
+                                    }
+                                }
+                                dialog.dismiss()
+                            } else {
+                                Log.e("TaskSave", getString(R.string.task_could_not_be_saved))
                             }
                         }
-                        val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                        val intent = Intent(context, AlarmReceiver::class.java).apply {
-                            putExtra("TASK_NAME", newTask.text.toString())
-                        }
-                        val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-                        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
-                    }
-                    dialog.dismiss()
+                    })
                 } else {
-                    Toast.makeText(requireContext(), "Please enter a task name.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(),
+                        getString(R.string.please_enter_a_task_name), Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), e.stackTraceToString(), Toast.LENGTH_LONG).show()
-                Log.e("Hata", "Bir hata oluştu", e)
+                activity?.runOnUiThread {
+                    Toast.makeText(requireContext(), e.stackTraceToString(), Toast.LENGTH_LONG).show()
+                }
+                Toast.makeText(requireContext(), "Error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
             }
         }
+
 
         dialog.show()
     }
@@ -340,7 +390,7 @@ class TaskFeedFragment : Fragment() {
                     override fun onShown(transientBottomBar: Snackbar?) {
 
                         transientBottomBar?.setAction("UNDO"){
-                            taskActivityViewModel.saveTask(task)
+                            taskActivityViewModel.undoTask(task)
                             actionBtnTapped=true
                             binding.noData.isVisible =false
                         }
@@ -386,7 +436,7 @@ class TaskFeedFragment : Fragment() {
                 layoutManager =
                     StaggeredGridLayoutManager(spanCount, StaggeredGridLayoutManager.VERTICAL)
                 setHasFixedSize(true)
-                rvAdapter = RvTasksAdapter(taskActivityViewModel, requireContext())
+                rvAdapter = RvTasksAdapter(taskActivityViewModel, this@TaskFeedFragment)
                 rvAdapter.stateRestorationPolicy =
                     RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
                 adapter = rvAdapter
@@ -427,6 +477,12 @@ class TaskFeedFragment : Fragment() {
                 categoryActivityViewModel.saveCategory(category)
             }
         }
+    }
+
+    override fun onTaskItemClicked(task: Task) {
+        val action = TaskFeedFragmentDirections.actionTaskFeedFragmentToCreateTaskFragment(task)
+        view?.let { Navigation.findNavController(it).navigate(action) }
+
     }
 
 }

@@ -4,14 +4,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.grigroviska.nopedot.model.Task
-import com.grigroviska.nopedot.repository.CategoryRepository
 import com.grigroviska.nopedot.repository.TaskRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class TaskActivityViewModel(private val repository: TaskRepository) : ViewModel() {
 
-    fun saveTask(newTask : Task) = viewModelScope.launch(Dispatchers.IO) {
+    fun saveTask(newTask: Task, listener: OnTaskSavedListener) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val taskId = repository.addTask(newTask)
+            val taskWithId = newTask.copy(id = taskId)
+            listener.onTaskSaved(taskWithId)
+        }
+    }
+
+    fun undoTask(newTask : Task) = viewModelScope.launch(Dispatchers.IO) {
         repository.addTask(newTask)
     }
 
@@ -36,10 +43,15 @@ class TaskActivityViewModel(private val repository: TaskRepository) : ViewModel(
         return repository.searchTasksByCategory(categoryName)
     }
 
+    fun getTaskById(taskId: Long): LiveData<Task> {
+        return repository.getTaskById(taskId)
+    }
+
     fun getAllTasks(): LiveData<List<Task>> = repository.getTask()
 
-    fun updateTaskDone(taskId: Int, done: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+    fun updateTaskDone(taskId: Long, done: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         repository.updateTaskDone(taskId, done)
     }
+
 
 }

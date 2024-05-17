@@ -8,7 +8,7 @@ import java.io.Serializable
 data class Task(
 
     @PrimaryKey(autoGenerate = true)
-    var id: Int=0,
+    var id: Long=0L,
     val title: String,
     var done: Boolean=false,
     val subItems: MutableList<String>,
@@ -16,17 +16,17 @@ data class Task(
     var dueDate: String,
     var timeReminder: String,
     var repeatTask: String = "No",
-    val color: Int = -1,
+    val color: Int = -1
 
     ): Serializable{
 
     val day: String
-        get() = dueDate.split(".")[0] // Günü almak için "." karakterinden böl
+        get() = dueDate.split(".")[0]
 
     val month: String
-        get() = dueDate.split(".")[1] // Ayı almak için "." karakterinden böl
+        get() = dueDate.split(".")[1]
 
     val year: String
-        get() = dueDate.split(".")[2] // Yılı almak için "." karakterinden böl
+        get() = dueDate.split(".")[2]
 
     }

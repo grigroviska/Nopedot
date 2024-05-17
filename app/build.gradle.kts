@@ -110,5 +110,13 @@ dependencies {
 
     implementation("androidx.appcompat:appcompat:1.3.0")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5")
+
+    val arch_version = "2.2.0-alpha01"
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$arch_version")
+
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$arch_version")
 }

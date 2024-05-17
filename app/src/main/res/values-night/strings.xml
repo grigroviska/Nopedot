@@ -42,5 +42,9 @@
     <string name="settings">Settings</string>
     <string name="subscription">Subscription</string>
     <string name="task">Task</string>
+    <string name="task_could_not_be_saved">Task could not be saved!</string>
+    <string name="please_enter_a_task_name">Please enter a task name.</string>
+    <string name="error_parsing_date_and_time">Error parsing date and time.</string>
+    <string name="new_subtext">New subtext</string>
 
 </resources>

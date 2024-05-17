@@ -6,17 +6,14 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.replace
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.grigroviska.nopedot.R
 import com.grigroviska.nopedot.databinding.ActivityHomeScreenBinding
 import com.grigroviska.nopedot.db.CategoryDatabase
 import com.grigroviska.nopedot.db.NoteDatabase
 import com.grigroviska.nopedot.db.TaskDatabase
+import com.grigroviska.nopedot.fragments.CreateTaskFragment
 import com.grigroviska.nopedot.fragments.NoteFeedFragment
 import com.grigroviska.nopedot.fragments.TaskFeedFragment
 import com.grigroviska.nopedot.repository.CategoryRepository
@@ -41,11 +38,6 @@ class HomeScreen : AppCompatActivity(){
         binding = ActivityHomeScreenBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-
-        val openFragment = intent.getStringExtra("OPEN_FRAGMENT")
-        if (openFragment == "Task_Feed_Fragment") {
-            replaceFragment(TaskFeedFragment())
-        }
 
         val noteRepository = NoteRepository(NoteDatabase(this))
         val taskRepository = TaskRepository(TaskDatabase(this))
@@ -77,6 +69,17 @@ class HomeScreen : AppCompatActivity(){
                 else -> false
             }
         }
+
+        val openFragment = intent.getStringExtra("OPEN_FRAGMENT")
+
+        val name= intent.getStringExtra("TASK_NAME")
+        val data= intent.getLongExtra("NOTIFICATION_ID",0L)
+        if (openFragment == "Create_Task_Fragment") {
+            if (name != null && data!=null) {
+
+                openCreateTaskFragmentWithData(data, name)
+            }
+        }
     }
 
     private fun replaceFragment(fragment: Fragment){
@@ -87,6 +90,20 @@ class HomeScreen : AppCompatActivity(){
         fragmentTransaction.commit()
 
     }
+
+    fun openCreateTaskFragmentWithData(taskId: Long, name: String) {
+        val fragment = CreateTaskFragment()
+        val bundle = Bundle()
+        bundle.putLong("NOTIFICATION_ID", taskId)
+        bundle.putString("TASK_NAME", name)
+        fragment.arguments = bundle
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.bottom_app_bar, menu)

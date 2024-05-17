@@ -76,10 +76,10 @@
                     android:layout_alignEnd="@id/calendar"
                     android:layout_alignStart="@id/calendar"
                     android:layout_alignBottom="@id/calendar"
-                    android:padding="6dp"
-                    android:text=" 1"
+                    android:padding="5dp"
+                    android:text=" 18"
                     android:textColor="@color/secondaryColor"
-                    android:textSize="10sp" />
+                    android:textSize="11sp" />
 
             </RelativeLayout>
 

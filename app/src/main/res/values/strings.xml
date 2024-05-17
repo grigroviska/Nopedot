@@ -80,4 +80,8 @@
     <string name="task">Task</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="task_could_not_be_saved">Task could not be saved!</string>
+    <string name="please_enter_a_task_name">Please enter a task name.</string>
+    <string name="error_parsing_date_and_time">Error parsing date and time.</string>
+    <string name="new_subtext">New subtext</string>
 </resources>

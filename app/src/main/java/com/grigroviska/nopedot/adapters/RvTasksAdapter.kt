@@ -1,8 +1,5 @@
 package com.grigroviska.nopedot.adapters
 
-import android.content.Context
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
@@ -19,13 +16,13 @@ import com.google.android.material.card.MaterialCardView
 import com.grigroviska.nopedot.R
 import com.grigroviska.nopedot.databinding.TaskItemLayoutBinding
 import com.grigroviska.nopedot.fragments.TaskFeedFragmentDirections
+import com.grigroviska.nopedot.listener.TaskItemClickListener
 import com.grigroviska.nopedot.model.Task
 import com.grigroviska.nopedot.utils.hideKeyboard
 import com.grigroviska.nopedot.viewModel.TaskActivityViewModel
 import java.text.DateFormatSymbols
-import kotlin.coroutines.coroutineContext
 
-class RvTasksAdapter(private val taskActivityViewModel: TaskActivityViewModel, private val context: Context) : ListAdapter<Task, RvTasksAdapter.TaskViewHolder>(TaskDiffUtilCallback()) {
+class RvTasksAdapter(private val taskActivityViewModel: TaskActivityViewModel, private val itemClickListener: TaskItemClickListener) : ListAdapter<Task, RvTasksAdapter.TaskViewHolder>(TaskDiffUtilCallback()) {
 
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val contentBinding = TaskItemLayoutBinding.bind(itemView)
@@ -37,11 +34,10 @@ class RvTasksAdapter(private val taskActivityViewModel: TaskActivityViewModel, p
         val year : TextView = contentBinding.year
         val subItems : TextView = contentBinding.subItems
         val checkboxTask : CheckBox = contentBinding.taskCheckBox
-        val blank : View = contentBinding.blank
         val taskItemLayout : MaterialCardView = contentBinding.taskItemLayout
-        var firstDoneTaskIndex: Int? = null
-        val completedLayout : RelativeLayout = contentBinding.completedLayout
+
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         return TaskViewHolder(
@@ -53,30 +49,17 @@ class RvTasksAdapter(private val taskActivityViewModel: TaskActivityViewModel, p
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         getItem(position).let { task ->
             holder.apply {
-                taskItem.transitionName = "recyclerView_${task.id}"
+                taskItemLayout.setOnClickListener {
+                    itemClickListener.onTaskItemClicked(task)
+                }
                 title.text = task.title
                 checkboxTask.isChecked = task.done
                 title.setTextColor(task.color)
                 day.text = task.day
                 month.text = getMonthName(task.month.toInt())
                 year.text = task.year
-                completedLayout.visibility = View.GONE
                 val subItemsText = task.subItems.joinToString("\n") { "\u2022 $it" }
                 holder.subItems.text = subItemsText
-
-                if (task.done && firstDoneTaskIndex == null ) {
-                    firstDoneTaskIndex = position
-                    completedLayout.visibility = View.VISIBLE
-                } else {
-                    completedLayout.visibility = View.GONE
-                }
-
-                taskItemLayout.setOnClickListener {
-                    val action = TaskFeedFragmentDirections.actionTaskFeedFragmentToCreateTaskFragment(task)
-                    val extras = FragmentNavigatorExtras(taskItem to "recyclerView_${task.id}")
-                    it.hideKeyboard()
-                    Navigation.findNavController(it).navigate(action, extras)
-                }
 
                 title.apply {
                     if (task.done) {
@@ -94,13 +77,6 @@ class RvTasksAdapter(private val taskActivityViewModel: TaskActivityViewModel, p
                     } else {
                         colorLayout.setBackgroundColor(resources.getColor(R.color.thirdColor))
                     }
-                }
-
-                title.setOnClickListener {
-                    val action = TaskFeedFragmentDirections.actionTaskFeedFragmentToCreateTaskFragment(task)
-                    val extras = FragmentNavigatorExtras(taskItem to "recyclerView_${task.id}")
-                    it.hideKeyboard()
-                    Navigation.findNavController(it).navigate(action, extras)
                 }
 
                 checkboxTask.setOnClickListener {

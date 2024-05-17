@@ -13,7 +13,7 @@ import com.grigroviska.nopedot.model.Task
 interface TaskDAO {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun addTask(task: Task)
+    suspend fun addTask(task: Task): Long
 
     @Update
     suspend fun updateTask(task: Task)
@@ -23,6 +23,9 @@ interface TaskDAO {
 
     @Query("SELECT * FROM Task WHERE title LIKE '%' || :query || '%' OR subItems LIKE '%' || :query || '%' OR category LIKE '%' || :query || '%' ORDER BY id DESC")
     fun searchTask(query: String): LiveData<List<Task>>
+
+    @Query("SELECT * FROM Task WHERE id = :taskId")
+    fun getTaskById(taskId: Long): LiveData<Task>
 
     @Query("SELECT * FROM Task Where category LIKE '%' || :query || '%' ORDER BY id DESC")
     fun searchTasksByCategory(query: String): LiveData<List<Task>>
@@ -34,6 +37,6 @@ interface TaskDAO {
     suspend fun deleteSubItem(subItemText: String)
 
     @Query("UPDATE Task SET done = :done WHERE id = :taskId")
-    suspend fun updateTaskDone(taskId: Int, done: Boolean)
+    suspend fun updateTaskDone(taskId: kotlin.Long, done: Boolean)
 
 }

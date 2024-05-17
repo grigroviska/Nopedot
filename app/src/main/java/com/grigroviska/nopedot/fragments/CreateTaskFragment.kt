@@ -1,11 +1,13 @@
 package com.grigroviska.nopedot.fragments
 
+import android.app.AlarmManager
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.Dialog
+import android.app.PendingIntent
 import android.app.TimePickerDialog
-import android.graphics.Color
-import android.graphics.PorterDuff
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.MotionEvent
 import androidx.fragment.app.Fragment
@@ -16,7 +18,6 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -30,6 +31,7 @@ import com.grigroviska.nopedot.databinding.BottomSheetLayoutBinding
 import com.grigroviska.nopedot.databinding.FragmentCreateTaskBinding
 import com.grigroviska.nopedot.model.Category
 import com.grigroviska.nopedot.model.Task
+import com.grigroviska.nopedot.receiver.AlarmReceiver
 import com.grigroviska.nopedot.utils.hideKeyboard
 import com.grigroviska.nopedot.viewModel.CategoryActivityViewModel
 import com.grigroviska.nopedot.viewModel.TaskActivityViewModel
@@ -38,7 +40,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.ArrayList
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -48,103 +49,58 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
     private lateinit var navController : NavController
     private lateinit var contentBinding: FragmentCreateTaskBinding
     private lateinit var selectedRepeatOption: String
-    private var task: Task? = null
+    private var taskRem: Task? = null
     private val taskActivityViewModel: TaskActivityViewModel by activityViewModels()
     private val categoryActivityViewModel: CategoryActivityViewModel by activityViewModels()
     private val openedEditTextList = mutableListOf<EditText>()
     private var color: Int = -1
     private val job = CoroutineScope(Dispatchers.Main)
     private val args: CreateTaskFragmentArgs by navArgs()
+    var taskId : Long = 0L
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         contentBinding = FragmentCreateTaskBinding.bind(view)
 
         navController = Navigation.findNavController(view)
-        val activity = activity as HomeScreen
+        activity as HomeScreen
 
-        ViewCompat.setTransitionName(
-            contentBinding.taskContentFragmentParent,
-            "recyclerView_${args.task?.id}"
-        )
+
+
+        taskId = arguments?.getLong("NOTIFICATION_ID", 0L)!!
+        setupTaskWithTaskId(taskId)
+        if(args.task!=null){
+            setupTaskWithTask(args.task!!)
+        }
 
         contentBinding.backButton.setOnClickListener {
+            if(taskRem != null){
+                val action = CreateTaskFragmentDirections.actionCreateTaskFragmentToTaskFeedFragment()
+                it.let { Navigation.findNavController(it).navigate(action) }
+            }
             requireView().hideKeyboard()
             navController.popBackStack()
         }
 
         contentBinding.saveTask.setOnClickListener {
-            task = args.task
+            if (args.task != null) {
+                taskRem = args.task
+                processTask(taskRem)
+            } else {
+                taskActivityViewModel.getTaskById(taskId).observe(viewLifecycleOwner) { task ->
+                    if (task != null) {
 
-            val iterator = openedEditTextList.iterator()
-            while (iterator.hasNext()) {
-                val editText = iterator.next()
-                if (editText.text.isBlank()) {
-                    contentBinding.taskContainer.removeView(editText)
-                    iterator.remove()
+                        taskRem = task
+                        processTask(taskRem)
+                    }
                 }
             }
-
-            val newSubItems = getOpenedEditTexts()
-
-            if (task != null) {
-                val newColor = color
-
-                if (newColor == task!!.color) {
-                    taskActivityViewModel.updateTask(
-                        Task(
-                            task!!.id,
-                            contentBinding.etTitle.text.toString(),
-                            false,
-                            newSubItems,
-                            contentBinding.category.text.toString(),
-                            contentBinding.dueDateValue.text.toString(),
-                            contentBinding.timeReminderValue.text.toString(),
-                            contentBinding.repeatTaskValue.text.toString(),
-                            task!!.color
-                        )
-                    )
-                } else {
-                    taskActivityViewModel.updateTask(
-                        Task(
-                            task!!.id,
-                            contentBinding.etTitle.text.toString(),
-                            false,
-                            newSubItems,
-                            contentBinding.category.text.toString(),
-                            contentBinding.dueDateValue.text.toString(),
-                            contentBinding.timeReminderValue.text.toString(),
-                            contentBinding.repeatTaskValue.text.toString(),
-                            newColor
-                        )
-                    )
-                }
-            }
-
-            requireView().hideKeyboard()
-            navController.popBackStack()
         }
-
 
         setupCategorySelection(contentBinding.category)
 
         contentBinding.dueDate.setOnClickListener{
-            val currentDate = Calendar.getInstance()
-            val year = currentDate.get(Calendar.YEAR)
-            val month = currentDate.get(Calendar.MONTH)
-            val dayOfMonth = currentDate.get(Calendar.DAY_OF_MONTH)
-
-            val datePickerDialog = DatePickerDialog(
-                requireContext(),
-                { _, selectedYear, selectedMonth, selectedDay ->
-                    val selectedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear"
-                    contentBinding.dueDateValue.text = selectedDate
-                },
-                year,
-                month,
-                dayOfMonth
-            )
-            datePickerDialog.show()
+            showDatePickerDialog()
         }
 
 
@@ -157,8 +113,80 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
         }
 
         contentBinding.addSubTask.setOnClickListener {
-            val newEditText = EditText(requireContext())
-            newEditText.layoutParams = LinearLayout.LayoutParams(
+            addSubTaskEditText()
+        }
+
+        contentBinding.chooseColorMode.setOnClickListener{
+            showColorPickerDialog()
+        }
+    }
+
+    private fun processTask(task: Task?) {
+        task?.let {
+            val newColor = color
+
+            val dueDateText = contentBinding.dueDateValue.text.toString()
+            val timeReminderText = contentBinding.timeReminderValue.text.toString()
+
+            val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val existingIntent = PendingIntent.getBroadcast(
+                context,
+                task.id.toInt(),
+                Intent(context, AlarmReceiver::class.java),
+                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+            )
+
+            val selectedDate: Date? = if (dueDateText.isNotEmpty() && timeReminderText.isNotEmpty()) {
+                SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).parse("$dueDateText $timeReminderText")
+            } else {
+                null
+            }
+
+            if (existingIntent != null) {
+                alarmManager.cancel(existingIntent)
+            }
+
+            selectedDate?.let {
+                val calendar = Calendar.getInstance().apply {
+                    time = it
+                }
+
+                val intent = Intent(context, AlarmReceiver::class.java).apply {
+                    putExtra("TASK_NAME", contentBinding.etTitle.text.toString())
+                    putExtra("NOTIFICATION_ID", task.id)
+                }
+
+                val pendingIntent = PendingIntent.getBroadcast(
+                    context,
+                    task.id.toInt(),
+                    intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+                alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+            }
+
+            taskActivityViewModel.updateTask(
+                Task(
+                    it.id,
+                    contentBinding.etTitle.text.toString(),
+                    false,
+                    getOpenedEditTexts(),
+                    contentBinding.category.text.toString(),
+                    contentBinding.dueDateValue.text.toString(),
+                    contentBinding.timeReminderValue.text.toString(),
+                    contentBinding.repeatTaskValue.text.toString(),
+                    if (newColor == it.color) it.color else newColor
+                )
+            )
+
+            requireView().hideKeyboard()
+            navController.popBackStack()
+        }
+    }
+
+    private fun addSubTaskEditText(subItemText: String = "") {
+        val newEditText = EditText(requireContext()).apply {
+            layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
@@ -166,72 +194,33 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
                 leftMargin = resources.getDimensionPixelSize(R.dimen.margin_start)
                 rightMargin = resources.getDimensionPixelSize(R.dimen.margin_end)
             }
-            newEditText.hint = "New subtext"
-            newEditText.requestFocus()
-            newEditText.background = null
+            hint = "New subtext"
+            setText(subItemText)
+            background = null
+        }
 
-            openedEditTextList.add(newEditText)
+        openedEditTextList.add(newEditText)
 
-            val removeIcon = AppCompatResources.getDrawable(requireContext(), R.drawable.remove)
-            newEditText.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, removeIcon, null)
-            contentBinding.taskContainer.addView(newEditText)
+        val removeIcon = AppCompatResources.getDrawable(requireContext(), R.drawable.remove)
+        newEditText.setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, removeIcon, null)
+        contentBinding.taskContainer.addView(newEditText)
 
-            removeIcon?.let { icon ->
-                icon.setBounds(0, 0, icon.intrinsicWidth, icon.intrinsicHeight)
-                newEditText.setOnTouchListener { _, event ->
-                    if (event.action == MotionEvent.ACTION_UP) {
-                        val removeBounds = (newEditText.right - newEditText.compoundDrawables[2].bounds.width())
-                        if (event.rawX >= removeBounds) {
-                            contentBinding.taskContainer.removeView(newEditText)
-                            true
-                        } else {
-                            false
-                        }
+        removeIcon?.let { icon ->
+            icon.setBounds(0, 0, icon.intrinsicWidth, icon.intrinsicHeight)
+            newEditText.setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_UP) {
+                    val removeBounds = (newEditText.right - newEditText.compoundDrawables[2].bounds.width())
+                    if (event.rawX >= removeBounds) {
+                        showDeleteConfirmationDialog(newEditText, newEditText.text.toString())
+                        true
                     } else {
                         false
                     }
+                } else {
+                    false
                 }
             }
         }
-
-        contentBinding.chooseColorMode.setOnClickListener{
-
-            val bottomSheetDialog = BottomSheetDialog(
-                requireContext(),
-                R.style.BottomSheetDialogTheme
-            )
-            val bottomSheetView: View =layoutInflater.inflate(
-                R.layout.bottom_sheet_layout,
-                null
-            )
-
-            with(bottomSheetDialog){
-
-                setContentView(bottomSheetView)
-                show()
-
-            }
-
-            val bottomSheetBinding = BottomSheetLayoutBinding.bind(bottomSheetView)
-            bottomSheetBinding.apply {
-                colorPicker.apply {
-                    setSelectedColor(color!!)
-                    setOnColorSelectedListener {
-                            value ->
-                        color = value
-                        contentBinding.apply {
-                            etTitle.setTextColor(color!!)
-                        }
-                    }
-                }
-
-            }
-            bottomSheetView.post {
-                bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
-            }
-        }
-
-        setUpTask()
     }
 
     private fun showRepeatTaskDialog() {
@@ -289,28 +278,36 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
         selectedOption.alpha = 1.0f
     }
 
-
-    private fun setUpTask() {
-        val task= args.task
-        val title = contentBinding.etTitle
-        val date : TextView = contentBinding.dueDateValue
-        val timeReminder : TextView = contentBinding.timeReminderValue
-        val repeatTask : TextView = contentBinding.repeatTaskValue
-        val category : MaterialButton = contentBinding.category
-
-        if (task!=null){
-            title.setText(task.title)
-            category.setText(task.category)
-            contentBinding.apply {
-                etTitle.setTextColor(task.color)
+    private fun setupTaskWithTaskId(taskId: Long) {
+        taskActivityViewModel.getTaskById(taskId).observe(viewLifecycleOwner) { task ->
+            task?.let {
+                setUpTask(task)
             }
-            date.text = task.dueDate
-            timeReminder.setText(task.timeReminder)
-            repeatTask.setText(task.repeatTask)
+        }
+    }
 
-            color = task.color
+    private fun setupTaskWithTask(task: Task) {
+        setUpTask(task)
+    }
 
-            val subItems = task.subItems
+    private fun setUpTask(task: Task?) {
+        task?.let { currentTask ->
+            val title = contentBinding.etTitle
+            val date: TextView = contentBinding.dueDateValue
+            val timeReminder: TextView = contentBinding.timeReminderValue
+            val repeatTask: TextView = contentBinding.repeatTaskValue
+            val category: MaterialButton = contentBinding.category
+
+            title.setText(currentTask.title)
+            category.setText(currentTask.category)
+            contentBinding.apply {
+                etTitle.setTextColor(currentTask.color)
+            }
+            date.text = currentTask.dueDate
+            timeReminder.setText(currentTask.timeReminder)
+            repeatTask.setText(currentTask.repeatTask)
+
+            val subItems = currentTask.subItems
 
             for (subItem in subItems) {
                 val newEditText = EditText(requireContext())
@@ -337,7 +334,6 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
                 )
                 contentBinding.taskContainer.addView(newEditText)
 
-                // Inside onViewCreated method, where you set up the remove icon
                 removeIcon?.let { icon ->
                     icon.setBounds(0, 0, icon.intrinsicWidth, icon.intrinsicHeight)
                     newEditText.setOnTouchListener { _, event ->
@@ -357,7 +353,7 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
                 }
             }
 
-                contentBinding.apply {
+            contentBinding.apply {
                 job.launch {
                     delay(10)
                 }
@@ -472,5 +468,52 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
             }
         }
         return false
+    }
+
+    private fun showDatePickerDialog() {
+        val currentDate = Calendar.getInstance()
+        val year = currentDate.get(Calendar.YEAR)
+        val month = currentDate.get(Calendar.MONTH)
+        val dayOfMonth = currentDate.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            { _, selectedYear, selectedMonth, selectedDay ->
+                val selectedDate = "$selectedDay.${selectedMonth + 1}.$selectedYear"
+                contentBinding.dueDateValue.text = selectedDate
+            },
+            year,
+            month,
+            dayOfMonth
+        )
+
+        datePickerDialog.show()
+    }
+
+    private fun showColorPickerDialog() {
+        val bottomSheetDialog = BottomSheetDialog(
+            requireContext(),
+            R.style.BottomSheetDialogTheme
+        )
+        val bottomSheetView: View = layoutInflater.inflate(
+            R.layout.bottom_sheet_layout,
+            null
+        )
+
+        bottomSheetDialog.setContentView(bottomSheetView)
+        bottomSheetDialog.show()
+
+        val bottomSheetBinding = BottomSheetLayoutBinding.bind(bottomSheetView)
+        bottomSheetBinding.colorPicker.apply {
+            setSelectedColor(color)
+            setOnColorSelectedListener { value ->
+                color = value
+                contentBinding.etTitle.setTextColor(color)
+            }
+        }
+
+        bottomSheetView.post {
+            bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        }
     }
 }
