@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
+        <!-- Binding data can be defined here if needed -->
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -18,98 +18,104 @@
         android:layout_marginHorizontal="16dp"
         android:layout_marginVertical="8dp">
 
-            <RelativeLayout
-                android:id="@+id/colorLayout"
+        <RelativeLayout
+            android:id="@+id/colorLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/thirdColor"
+            android:padding="8dp">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/thirdColor"
-                android:padding="8dp">
+                android:orientation="horizontal">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/month"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Jun"
-                            android:layout_marginStart="9dp"
-                            android:layout_marginEnd="9dp"
-                            android:layout_marginTop="8dp"
-                            android:textSize="12sp"
-                            android:textColor="@color/white" />
-
-                        <TextView
-                            android:id="@+id/day"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginEnd="10dp"
-                            android:textStyle="bold"
-                            android:textSize="16sp"
-                            android:text="14"
-                            android:textColor="@color/secondaryColor" />
-
-                        <TextView
-                            android:id="@+id/year"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="5dp"
-                            android:layout_marginEnd="5dp"
-                            android:textSize="12sp"
-                            android:text="2024"
-                            android:textColor="@color/white" />
-
-                    </LinearLayout>
-
-                    <View
-                        android:id="@+id/blank"
-                        android:layout_width="2dp"
-                        android:layout_height="match_parent"
-                        android:background="@color/secondaryColor"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"/>
-
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/month"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:orientation="vertical">
+                        android:text="Jun"
+                        android:layout_marginStart="9dp"
+                        android:layout_marginEnd="9dp"
+                        android:layout_marginTop="8dp"
+                        android:textSize="12sp"
+                        android:textColor="@color/white" />
 
-                        <CheckBox
-                            android:id="@+id/taskCheckBox"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="3dp"
-                            android:textStyle="bold"
-                            android:textSize="16sp"
-                            android:text="@string/this_is_an_sample_task_inside_the_application"
-                            android:paddingStart="8dp"
-                            android:buttonTint="@color/secondaryColor" />
+                    <TextView
+                        android:id="@+id/day"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:text="14"
+                        android:textColor="@color/secondaryColor" />
 
-                        <TextView
-                            android:id="@+id/subItems"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="12sp"
-                            android:textColor="@color/white"
-                            android:text="@string/new_task_subject"
-                            android:layout_marginStart="40dp" />
+                    <TextView
+                        android:id="@+id/year"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:textSize="12sp"
+                        android:text="2024"
+                        android:textColor="@color/white" />
 
-                    </LinearLayout>
+                    <ImageView
+                        android:id="@+id/reminder"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:layout_gravity="center"
+                        android:src="@drawable/alarm"
+                        android:padding="3dp"
+                        app:tint="@color/secondaryColor" />
+
                 </LinearLayout>
 
-            </RelativeLayout>
+                <View
+                    android:id="@+id/blank"
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/secondaryColor"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp" />
 
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="vertical">
 
+                    <CheckBox
+                        android:id="@+id/taskCheckBox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="3dp"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:paddingStart="8dp"
+                        android:buttonTint="@color/secondaryColor" />
 
+                    <TextView
+                        android:id="@+id/subItems"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textColor="@color/white"
+                        android:layout_marginStart="40dp"
+                        android:text="@string/new_task_subject" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </RelativeLayout>
 
     </com.google.android.material.card.MaterialCardView>
 </layout>

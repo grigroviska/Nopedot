@@ -1,105 +1,86 @@
 package com.grigroviska.nopedot.adapters
 
+import android.content.res.ColorStateList
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.RelativeLayout
-import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.navigation.Navigation
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.card.MaterialCardView
 import com.grigroviska.nopedot.R
 import com.grigroviska.nopedot.databinding.TaskItemLayoutBinding
-import com.grigroviska.nopedot.fragments.TaskFeedFragmentDirections
 import com.grigroviska.nopedot.listener.TaskItemClickListener
 import com.grigroviska.nopedot.model.Task
-import com.grigroviska.nopedot.utils.hideKeyboard
 import com.grigroviska.nopedot.viewModel.TaskActivityViewModel
 import java.text.DateFormatSymbols
 
-class RvTasksAdapter(private val taskActivityViewModel: TaskActivityViewModel, private val itemClickListener: TaskItemClickListener) : ListAdapter<Task, RvTasksAdapter.TaskViewHolder>(TaskDiffUtilCallback()) {
+class RvTasksAdapter(
+    private val taskActivityViewModel: TaskActivityViewModel,
+    private val itemClickListener: TaskItemClickListener
+) : ListAdapter<Task, RvTasksAdapter.TaskViewHolder>(TaskDiffUtilCallback()) {
 
-    inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val contentBinding = TaskItemLayoutBinding.bind(itemView)
-        val title: TextView = contentBinding.taskCheckBox
-        val taskItem: MaterialCardView = contentBinding.taskItemLayout
-        val colorLayout: RelativeLayout = contentBinding.colorLayout
-        val day : TextView = contentBinding.day
-        val month : TextView = contentBinding.month
-        val year : TextView = contentBinding.year
-        val subItems : TextView = contentBinding.subItems
-        val checkboxTask : CheckBox = contentBinding.taskCheckBox
-        val taskItemLayout : MaterialCardView = contentBinding.taskItemLayout
+    inner class TaskViewHolder(private val binding: TaskItemLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
 
-    }
+        fun bind(task: Task) {
+            with(binding) {
+                // Önceki dinleyiciyi kaldır
+                taskCheckBox.setOnCheckedChangeListener(null)
 
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
-        return TaskViewHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.task_item_layout, parent, false)
-        )
-    }
-
-    override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        getItem(position).let { task ->
-            holder.apply {
-                taskItemLayout.setOnClickListener {
-                    itemClickListener.onTaskItemClicked(task)
+                // CheckBox güncellemesi
+                taskCheckBox.text = task.title
+                taskCheckBox.isChecked = task.done
+                taskCheckBox.paintFlags = if (task.done) {
+                    taskCheckBox.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                } else {
+                    taskCheckBox.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
                 }
-                title.text = task.title
-                checkboxTask.isChecked = task.done
-                title.setTextColor(task.color)
+
+                // Tarih bilgisi
                 day.text = task.day
                 month.text = getMonthName(task.month.toInt())
                 year.text = task.year
-                val subItemsText = task.subItems.joinToString("\n") { "\u2022 $it" }
-                holder.subItems.text = subItemsText
 
-                title.apply {
-                    if (task.done) {
-                        paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                        title.setTextColor(ContextCompat.getColor(context, R.color.doneColor))
-                    } else {
-                        paintFlags = paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-                        title.setTextColor(task.color)
-                    }
-                }
+                // Alt öğeler
+                subItems.text = task.subItems.joinToString("\n") { "\u2022 $it" }
 
-                colorLayout.apply {
-                    if (task.done) {
-                        colorLayout.setBackgroundColor(resources.getColor(R.color.primaryColor))
-                    } else {
-                        colorLayout.setBackgroundColor(resources.getColor(R.color.thirdColor))
-                    }
-                }
+                // **COLOR LAYOUT RENK GÜNCELLEME**
+                val colorRes = if (task.done) R.color.doneColor else R.color.thirdColor
+                val color = ContextCompat.getColor(root.context, colorRes)
+                colorLayout.setBackgroundColor(color) // ✅ Renk sıfırlanıyor ve güncelleniyor
 
-                checkboxTask.setOnClickListener {
-                    val isChecked = checkboxTask.isChecked
+                // Hatırlatma ikonunu güncelle
+                reminder.visibility = if (task.timeReminder.isNotEmpty()) View.VISIBLE else View.GONE
+
+                // **CheckBox tıklanınca güncelle**
+                taskCheckBox.setOnCheckedChangeListener { _, isChecked ->
                     task.done = isChecked
                     taskActivityViewModel.updateTaskDone(task.id, isChecked)
+                    notifyItemChanged(adapterPosition) // 🎯 ColorLayout rengi güncelleniyor
+                }
 
-                    title.apply {
-                        if (isChecked) {
-                            paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                            title.setTextColor(ContextCompat.getColor(context, R.color.doneColor))
-                        } else {
-                            paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-                            title.setTextColor(task.color)
-                        }
-                    }
+                // Kart tıklama işlemi
+                taskItemLayout.setOnClickListener {
+                    itemClickListener.onTaskItemClicked(task)
                 }
             }
         }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
+        val binding = TaskItemLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return TaskViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
+        holder.bind(getItem(position))
+    }
+
+    override fun submitList(list: List<Task>?) {
+        super.submitList(list?.sortedBy { it.done })
     }
 
     private fun getMonthName(monthNumber: Int): String {
         return DateFormatSymbols().months[monthNumber - 1]
     }
 }
-

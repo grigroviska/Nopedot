@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/firstDayFormat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/first_day_of_week"
+        android:layout_marginStart="20dp"
+        android:textSize="22sp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroupDateFormats"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:layout_below="@id/firstDayFormat">
+
+        <RadioButton
+            android:id="@+id/systemDefault"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/system_default" />
+
+        <RadioButton
+            android:id="@+id/monday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/monday" />
+
+        <RadioButton
+            android:id="@+id/sunday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sunday" />
+
+        <RadioButton
+            android:id="@+id/saturday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/saturday" />
+
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/buttonCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/secondaryColor"
+        android:layout_marginEnd="20dp"
+        android:text="@string/cancel"
+        android:layout_toStartOf="@id/buttonSave"
+        android:layout_below="@id/radioGroupDateFormats"
+        android:layout_marginTop="20dp" />
+
+    <Button
+        android:id="@+id/buttonSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/secondaryColor"
+        android:text="@string/save"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/radioGroupDateFormats"
+        android:layout_marginTop="20dp" />
+
+</RelativeLayout>

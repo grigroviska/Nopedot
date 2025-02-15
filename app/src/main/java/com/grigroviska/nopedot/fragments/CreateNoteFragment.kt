@@ -37,7 +37,6 @@ class CreateNoteFragment : Fragment(R.layout.fragment_create_note) {
     private lateinit var navController : NavController
     private lateinit var contentBinding: FragmentCreateNoteBinding
     private var note: Note?=null
-    //private var sNote : Note?=null
     private var color = Color.parseColor("#111111")
     private lateinit var result: String
     private val noteActivityViewModel: NoteActivityViewModel by activityViewModels()

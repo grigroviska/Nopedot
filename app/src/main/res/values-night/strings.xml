@@ -46,5 +46,33 @@
     <string name="please_enter_a_task_name">Please enter a task name.</string>
     <string name="error_parsing_date_and_time">Error parsing date and time.</string>
     <string name="new_subtext">New subtext</string>
+    <string name="one_time">One Time</string>
+    <string name="date_format">Date Format</string>
+    <string name="day_month_year">"  Day/Month/Year"</string>
+    <string name="month_day_year">"  Month/Day/Year"</string>
+    <string name="year_month_day">"  Year/Month/Day"</string>
+    <string name="about">About</string>
+    <string name="language">Language</string>
+    <string name="help_us_translate">Help Us Translate</string>
+    <string name="version_1_0_0">Version: 1.0.0</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="feedback">Feedback</string>
+    <string name="share_app">Share App</string>
+    <string name="rate_us">Rate Us</string>
+    <string name="faq">FAQ</string>
+    <string name="first_day_of_week">First Day Of Week</string>
+    <string name="time_format">Time Format</string>
+    <string name="donate">Donate</string>
+    <string name="pro_version">Pro Version</string>
+    <string name="check_for_updates">Check For Updates</string>
+    <string name="upgrade_app">Upgrade App</string>
+    <string name="notification_reminder">Notification Reminder</string>
+    <string name="account_sync">Account Sync</string>
+    <string name="monday">Monday</string>
+    <string name="system_default">System Default</string>
+    <string name="sunday">Sunday</string>
+    <string name="saturday">Saturday</string>
+    <string name="_24_hour">24 Hour</string>
+    <string name="_12_hour">12 Hour</string>
 
 </resources>

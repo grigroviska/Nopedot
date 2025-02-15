@@ -15,12 +15,6 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/subscription"
-        android:title="@string/subscription"
-        android:icon="@drawable/wallet"
-        app:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/settings"
         android:title="@string/settings"
         android:icon="@drawable/settings"

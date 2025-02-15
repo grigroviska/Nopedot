@@ -10,32 +10,87 @@
     <color name="secondaryColor">#E6E3C2</color>
     <color name="selectedColor">#BFB762</color>
 
-
-
-    <!--color palette-->
-    <color name="purple">#F5F5DC</color>
-    <color name="beige">#F5F5DC</color>
-    <color name="blue">#ADD8E6</color>
-    <color name="peach">#F0C390</color>
-    <color name="green">#C3F09C</color>
-    <color name="orangeRed">#F3722C</color>
-    <color name="yellowOrange">#F8961E</color>
-    <color name="MangoTango">#F9844A</color>
-    <color name="maizeCrayola">#F9C74F</color>
+    <!--color palette soft-->
+    <color name="soft_red">#CD6155</color>
+    <color name="soft_red2">#EC7063</color>
     <color name="card_purple">#8690B1</color>
+    <color name="soft_purple">#AF7AC5</color>
+    <color name="soft_purple2">#A569BD</color>
+    <color name="soft_blue">#5499C7</color>
+    <color name="soft_blue2">#5DADE2</color>
+    <color name="soft_cyan">#48C9B0</color>
+    <color name="soft_cyan2">#45B39D</color>
+    <color name="soft_green">#52BE80</color>
+    <color name="soft_green2">#58D68D</color>
+    <color name="soft_yellow">#F4D03F</color>
+    <color name="soft_yellow2">#F5B041</color>
+    <color name="soft_orange">#EB984E</color>
+    <color name="soft_orange2">#DC7633</color>
+    <color name="soft_gray">#95A5A6</color>
+    <color name="soft_gray2">#AEB6BF</color>
+    <!--color palette dark-->
 
+    <color name="red">#641E16</color>
+    <color name="red2">#78281F</color>
+    <color name="purple">#512E5F</color>
+    <color name="purple2">#4A235A</color>
+    <color name="blue2">#154360</color>
+    <color name="blue3">#1B4F72</color>
+    <color name="cyan">#0E6251</color>
+    <color name="cyan2">#145A32</color>
+    <color name="green2">#5b7961</color>
+    <color name="green3">#1A261D</color>
+    <color name="darkOrange">#BA4A00</color>
+    <color name="gray">#7B7D7D</color>
+    <color name="gray2">#626567</color>
+    <color name="gray3">#4D5656</color>
+    <color name="gray4">#424949</color>
+    <color name="dark_blue">#1B2631</color>
+    <color name="dark_blue2">#17202A</color>
+    <color name="titan">#05313d</color>
+    <color name="dark_card_purple">#282B35</color>
 
-    <array name="color_picker">
-        <item>@color/thirdColor</item>
+    <array name="color_picker_task">
+        <item>@color/white</item>
+        <item>@color/soft_red</item>
+        <item>@color/soft_red2</item>
         <item>@color/card_purple</item>
-        <item>@color/peach</item>
-        <item>@color/green</item>
-        <item>@color/purple</item>
-        <item>@color/beige</item>
-        <item>@color/blue</item>
-        <item>@color/orangeRed</item>
-        <item>@color/yellowOrange</item>
-        <item>@color/MangoTango</item>
-        <item>@color/maizeCrayola</item>
+        <item>@color/soft_purple</item>
+        <item>@color/soft_purple2</item>
+        <item>@color/soft_blue</item>
+        <item>@color/soft_blue2</item>
+        <item>@color/soft_cyan</item>
+        <item>@color/soft_cyan2</item>
+        <item>@color/soft_green</item>
+        <item>@color/soft_green2</item>
+        <item>@color/soft_yellow</item>
+        <item>@color/soft_yellow2</item>
+        <item>@color/soft_orange</item>
+        <item>@color/soft_orange2</item>
+        <item>@color/soft_gray</item>
+        <item>@color/soft_gray2</item>
     </array>
+
+    <array name="color_picker_note">
+        <item>@color/thirdColor</item>
+        <item>@color/red</item>
+        <item>@color/red2</item>
+        <item>@color/purple</item>
+        <item>@color/purple2</item>
+        <item>@color/blue2</item>
+        <item>@color/blue3</item>
+        <item>@color/cyan</item>
+        <item>@color/cyan2</item>
+        <item>@color/green2</item>
+        <item>@color/green3</item>
+        <item>@color/darkOrange</item>
+        <item>@color/gray</item>
+        <item>@color/gray2</item>
+        <item>@color/gray3</item>
+        <item>@color/gray4</item>
+        <item>@color/dark_blue</item>
+        <item>@color/dark_blue2</item>
+        <item>@color/titan</item>
+    </array>
+
 </resources>

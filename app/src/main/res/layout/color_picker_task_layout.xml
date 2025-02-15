@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/primaryColor"
-        android:id="@+id/bottomSheetParent">
+        android:id="@+id/colorPickerTaskParent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -62,7 +62,7 @@
                     app:spectrum_autoPadding="true"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
-                    app:spectrum_colors="@array/color_picker_note"
+                    app:spectrum_colors="@array/color_picker_task"
                     app:spectrum_columnCount="18"
                     app:spectrum_outlineWidth="0.1dp" />
 

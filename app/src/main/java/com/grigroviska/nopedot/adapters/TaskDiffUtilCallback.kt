@@ -9,6 +9,8 @@ class TaskDiffUtilCallback : DiffUtil.ItemCallback<Task>() {
     }
 
     override fun areContentsTheSame(oldItem: Task, newItem: Task): Boolean {
-        return oldItem == newItem
+        return oldItem.title == newItem.title &&
+                oldItem.done == newItem.done &&
+                oldItem.color == newItem.color
     }
 }

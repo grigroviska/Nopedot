@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/timeFormat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/time_format"
+        android:layout_marginStart="20dp"
+        android:textSize="22sp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"/>
+
+    <RadioGroup
+        android:id="@+id/radioGroupTimeFormats"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:layout_below="@id/timeFormat">
+
+        <RadioButton
+            android:id="@+id/systemTimeDefault"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/system_default" />
+
+        <RadioButton
+            android:id="@+id/hour24"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/_24_hour" />
+
+        <RadioButton
+            android:id="@+id/hour12"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/_12_hour" />
+
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/buttonCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/secondaryColor"
+        android:layout_marginEnd="20dp"
+        android:text="@string/cancel"
+        android:layout_toStartOf="@id/buttonSave"
+        android:layout_below="@id/radioGroupTimeFormats"
+        android:layout_marginTop="20dp" />
+
+    <Button
+        android:id="@+id/buttonSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/secondaryColor"
+        android:text="@string/save"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/radioGroupTimeFormats"
+        android:layout_marginTop="20dp" />
+
+</RelativeLayout>

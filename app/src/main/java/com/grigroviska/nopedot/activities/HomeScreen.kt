@@ -15,6 +15,7 @@ import com.grigroviska.nopedot.db.NoteDatabase
 import com.grigroviska.nopedot.db.TaskDatabase
 import com.grigroviska.nopedot.fragments.CreateTaskFragment
 import com.grigroviska.nopedot.fragments.NoteFeedFragment
+import com.grigroviska.nopedot.fragments.SettingsFragment
 import com.grigroviska.nopedot.fragments.TaskFeedFragment
 import com.grigroviska.nopedot.repository.CategoryRepository
 import com.grigroviska.nopedot.repository.NoteRepository
@@ -64,6 +65,10 @@ class HomeScreen : AppCompatActivity(){
                 }
                 R.id.task -> {
                     navController.navigate(R.id.taskFeedFragment)
+                    true
+                }
+                R.id.settings -> {
+                    navController.navigate(R.id.settingsFragment)
                     true
                 }
                 else -> false
@@ -118,6 +123,10 @@ class HomeScreen : AppCompatActivity(){
             }
             R.id.task -> {
                 replaceFragment(TaskFeedFragment())
+                true
+            }
+            R.id.settings -> {
+                replaceFragment(SettingsFragment())
                 true
             }
             else -> super.onOptionsItemSelected(item)

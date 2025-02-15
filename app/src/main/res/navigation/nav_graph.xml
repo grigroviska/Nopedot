@@ -24,6 +24,9 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_noteFeedFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/createNoteFragment"
@@ -42,6 +45,9 @@
             android:defaultValue="@null"
             app:argType="com.grigroviska.nopedot.model.Note"
             app:nullable="true"/>
+        <action
+            android:id="@+id/action_createNoteFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/taskFeedFragment"
@@ -62,6 +68,9 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_taskFeedFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/createTaskFragment"
@@ -80,5 +89,25 @@
             android:defaultValue="@null"
             app:argType="com.grigroviska.nopedot.model.Task"
             app:nullable="true"/>
+        <action
+            android:id="@+id/action_createTaskFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.grigroviska.nopedot.fragments.SettingsFragment"
+        android:label="SettingsFragment" >
+        <action
+            android:id="@+id/action_settingsFragment_to_createTaskFragment"
+            app:destination="@id/createTaskFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_taskFeedFragment"
+            app:destination="@id/taskFeedFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_noteFeedFragment"
+            app:destination="@id/noteFeedFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_createNoteFragment"
+            app:destination="@id/createNoteFragment" />
     </fragment>
 </navigation>

@@ -140,7 +140,7 @@ class NoteFeedFragment : Fragment(R.layout.fragment_note_feed) {
                 snackBar.setActionTextColor(
                     ContextCompat.getColor(
                         requireContext(),
-                        R.color.yellowOrange
+                        R.color.soft_yellow2
                     )
                 )
                 snackBar.show()

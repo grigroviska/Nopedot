@@ -61,7 +61,7 @@ class TaskFeedFragment : Fragment(), TaskItemClickListener {
     private lateinit var rvAdapter: RvTasksAdapter
 
     private val openedEditTextList = mutableListOf<EditText>()
-    private var selectedLastDate : String = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
+    private var selectedLastDate : String = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
     private var selectedLastTime : String = ""
     private val taskActivityViewModel : TaskActivityViewModel by activityViewModels()
     private val categoryActivityViewModel : CategoryActivityViewModel by activityViewModels()
@@ -133,7 +133,8 @@ class TaskFeedFragment : Fragment(), TaskItemClickListener {
 
     }
 
-    private fun showBottomSheet(){
+    private fun showBottomSheet() {
+        openedEditTextList.clear()
         val dialogView = layoutInflater.inflate(R.layout.new_task, null)
         dialog = BottomSheetDialog(requireContext(), R.style.DialogStyle)
         dialog.setContentView(dialogView)
@@ -145,6 +146,8 @@ class TaskFeedFragment : Fragment(), TaskItemClickListener {
         val calendarText : TextView = dialogView.findViewById(R.id.calendarText)
         val newTask : EditText = dialogView.findViewById(R.id.newTask)
         val taskContainer = dialogView.findViewById<LinearLayout>(R.id.taskContainer)
+
+        var isDateTimePicked = false
 
         setupCategorySelection(category)
 
@@ -185,12 +188,30 @@ class TaskFeedFragment : Fragment(), TaskItemClickListener {
         val currentDate = Calendar.getInstance()
         val dayOfMonth = currentDate.get(Calendar.DAY_OF_MONTH)
         calendarText.text = "$dayOfMonth"
-        selectedLastDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(currentDate.time).toString()
+        selectedLastDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(currentDate.time).toString()
         calendarImageView.setOnClickListener {
-            val currentDate: Calendar = Calendar.getInstance()
+            isDateTimePicked = true
+            val currentDate = Calendar.getInstance()
+
+            if (selectedLastDate.isNotEmpty()) {
+                SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(selectedLastDate)?.apply {
+                    currentDate.time = this
+                }
+            }
+
             val year = currentDate.get(Calendar.YEAR)
             val month = currentDate.get(Calendar.MONTH)
             val day = currentDate.get(Calendar.DAY_OF_MONTH)
+            val hour = if (selectedLastTime.isNotEmpty()) {
+                selectedLastTime.split(":")[0].toInt()
+            } else {
+                currentDate.get(Calendar.HOUR_OF_DAY)
+            }
+            val minute = if (selectedLastTime.isNotEmpty()) {
+                selectedLastTime.split(":")[1].toInt()
+            } else {
+                currentDate.get(Calendar.MINUTE)
+            }
 
             val datePickerDialog = DatePickerDialog(requireContext(), { _, selectedYear, selectedMonth, selectedDay ->
                 val selectedDate = Calendar.getInstance()
@@ -203,20 +224,21 @@ class TaskFeedFragment : Fragment(), TaskItemClickListener {
                     val selectedDayOfMonth = selectedDate.get(Calendar.DAY_OF_MONTH)
                     calendarText.text = "$selectedDayOfMonth"
 
-                    selectedLastDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(selectedDate.time).toString()
+                    selectedLastDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(selectedDate.time).toString()
                     selectedLastTime = String.format("%02d:%02d", selectedHour, selectedMinute)
 
-                }, currentDate.get(Calendar.HOUR_OF_DAY), currentDate.get(Calendar.MINUTE), true)
+                }, hour, minute, true)
 
                 timePickerDialog.show()
             }, year, month, day)
 
             datePickerDialog.setOnCancelListener {
-                selectedLastDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(currentDate.time).toString()
+                selectedLastDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(currentDate.time).toString()
             }
 
             datePickerDialog.show()
         }
+
 
         save.setOnClickListener {
             try {
@@ -247,9 +269,9 @@ class TaskFeedFragment : Fragment(), TaskItemClickListener {
                             val taskId = taskWithId.id
                             if (taskId > 0) {
 
-                                if (selectedLastDate.isNotEmpty() && selectedLastTime.isNotEmpty()) {
+                                if (isDateTimePicked) {
                                     try {
-                                        val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
+                                        val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
                                         val selectedDate = dateFormat.parse("$selectedLastDate $selectedLastTime")
 
                                         selectedDate?.let {
@@ -304,7 +326,6 @@ class TaskFeedFragment : Fragment(), TaskItemClickListener {
                 Toast.makeText(requireContext(), "Error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
             }
         }
-
 
         dialog.show()
     }
@@ -404,7 +425,7 @@ class TaskFeedFragment : Fragment(), TaskItemClickListener {
                 snackBar.setActionTextColor(
                     ContextCompat.getColor(
                         requireContext(),
-                        R.color.yellowOrange
+                        R.color.soft_yellow2
                     )
                 )
                 snackBar.show()
@@ -460,7 +481,9 @@ class TaskFeedFragment : Fragment(), TaskItemClickListener {
     private fun observerDataChanges() {
         taskActivityViewModel.getAllTasks().observe(viewLifecycleOwner){list->
             binding.noData.isVisible = list.isEmpty()
-            rvAdapter.submitList(list)
+            rvAdapter.submitList(list){
+                binding.rvTask.layoutManager?.smoothScrollToPosition(binding.rvTask, null, 0)
+            }
         }
     }
 

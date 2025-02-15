@@ -20,7 +20,7 @@ class AlarmReceiver : BroadcastReceiver() {
         if (context != null && intent != null) {
             val taskName = intent.getStringExtra("TASK_NAME")
             val notificationId = intent.getLongExtra("NOTIFICATION_ID", 0L)
-            if (taskName != null && taskName.isNotEmpty() && notificationId !=0L) {
+            if (!taskName.isNullOrEmpty() && notificationId !=0L) {
                 showNotification(context, taskName, notificationId)
             }
         }
