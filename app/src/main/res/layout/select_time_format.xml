@@ -22,12 +22,6 @@
         android:layout_below="@id/timeFormat">
 
         <RadioButton
-            android:id="@+id/systemTimeDefault"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/system_default" />
-
-        <RadioButton
             android:id="@+id/hour24"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

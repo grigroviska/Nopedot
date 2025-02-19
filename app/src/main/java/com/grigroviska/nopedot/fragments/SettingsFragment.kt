@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -34,6 +35,20 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         }
         contentBinding.feedbackLayout.setOnClickListener {
             openFeedbackEmail()
+        }
+
+        val sharedPreferences = requireActivity().getSharedPreferences("NopeDotSettings", Context.MODE_PRIVATE)
+
+        // Varsayılan ayarları kontrol et ve eğer kaydedilmemişse varsayılan değerleri kaydet
+        if (!sharedPreferences.contains("firstDayOfWeek")) {
+            saveToPreferences("firstDayOfWeek", "Sunday")
+        }
+        if (!sharedPreferences.contains("dateFormat")) {
+            val defaultDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()) + getString(R.string.day_month_year)
+            saveToPreferences("dateFormat", "dd/MM/yyyy")
+        }
+        if (!sharedPreferences.contains("hourFormat")) {
+            saveToPreferences("hourFormat", "24 Hour")
         }
     }
 
@@ -100,19 +115,32 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         val sharedPreferences = requireActivity().getSharedPreferences("NopeDotSettings", Context.MODE_PRIVATE)
         val savedDateFormat = sharedPreferences.getString("dateFormat", dateStr1)
 
-        when (savedDateFormat) {
-            dateStr1 -> radioDateFormat1.isChecked = true
-            dateStr2 -> radioDateFormat2.isChecked = true
-            dateStr3 -> radioDateFormat3.isChecked = true
-            else -> radioDateFormat1.isChecked = true
+        // Kullanıcı tercihini seçili radio butona işaretle
+        val formatToCheck = when (savedDateFormat) {
+            dateStr1 -> "dd/MM/yyyy"
+            dateStr2 -> "MM/dd/yyyy"
+            dateStr3 -> "yyyy/MM/dd"
+            else -> "dd/MM/yyyy"
+        }
+        when (formatToCheck) {
+            "dd/MM/yyyy" -> radioDateFormat1.isChecked = true
+            "MM/dd/yyyy" -> radioDateFormat2.isChecked = true
+            "yyyy/MM/dd" -> radioDateFormat3.isChecked = true
         }
 
         buttonSave.setOnClickListener {
             val selectedId = dialog.findViewById<RadioGroup>(R.id.radioGroupDateFormats).checkedRadioButtonId
             val selectedRadioButton = dialog.findViewById<RadioButton>(selectedId)
-            val dateFormat = selectedRadioButton.text.toString()
 
-            saveToPreferences("dateFormat", dateFormat)
+            // Seçilen format string'ini kaydet
+            val formatToSave = when (selectedRadioButton.text.toString()) {
+                dateStr1 -> "dd/MM/yyyy"
+                dateStr2 -> "MM/dd/yyyy"
+                dateStr3 -> "yyyy/MM/dd"
+                else -> "dd/MM/yyyy" // Varsayılan değer
+            }
+
+            saveToPreferences("dateFormat", formatToSave)
             dialog.dismiss()
         }
 
@@ -127,39 +155,47 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.select_time_format)
 
-        val radioTimeFormatDefault = dialog.findViewById<RadioButton>(R.id.systemTimeDefault)
         val radioTimeFormat24 = dialog.findViewById<RadioButton>(R.id.hour24)
         val radioTimeFormat12 = dialog.findViewById<RadioButton>(R.id.hour12)
         val buttonSave = dialog.findViewById<View>(R.id.buttonSave)
         val buttonCancel = dialog.findViewById<View>(R.id.buttonCancel)
 
         val sharedPreferences = requireActivity().getSharedPreferences("NopeDotSettings", Context.MODE_PRIVATE)
-        val savedTimeFormat = sharedPreferences.getString("timeFormat", null)
+        val savedTimeFormat = sharedPreferences.getString("hourFormat", "24 Hour") // Varsayılan değer 24 Hour
+
+        // Varsayılan ayarın doğru şekilde yüklendiğinden emin olun
+        Log.d("SavedTimeFormat", "Saved time format: $savedTimeFormat")
 
         when (savedTimeFormat) {
             "12 Hour" -> radioTimeFormat12.isChecked = true
             "24 Hour" -> radioTimeFormat24.isChecked = true
-            "System Default" -> radioTimeFormatDefault.isChecked = true
+            else -> radioTimeFormat24.isChecked = true // Eğer hiçbir seçenek uymuyorsa varsayılan 24 Hour
         }
 
         buttonSave.setOnClickListener {
             val selectedId = dialog.findViewById<RadioGroup>(R.id.radioGroupTimeFormats).checkedRadioButtonId
             val selectedRadioButton = dialog.findViewById<RadioButton>(selectedId)
-            val timeFormat = selectedRadioButton?.text?.toString() ?: "24 Hour"
+            val timeFormat = selectedRadioButton?.text?.toString() ?: "12 Hour"
 
-            saveToPreferences("timeFormat", timeFormat)
+            Log.d("" +
+                    "" +
+                    "TimeFormat", "Selected time format: $timeFormat") // Seçilen zaman formatını logla
+            Toast.makeText(requireContext(),timeFormat, Toast.LENGTH_SHORT).show()
+            saveToPreferences("hourFormat", timeFormat)
             dialog.dismiss()
         }
 
         buttonCancel.setOnClickListener {
+            // Cancel butonuna basıldığında kaydedilmiş değer null ise 24 Hour olarak kaydeder
             if (savedTimeFormat == null) {
-                saveToPreferences("timeFormat", "24 Hour")
+                saveToPreferences("hourFormat", "24 Hour")
             }
             dialog.dismiss()
         }
 
         dialog.show()
     }
+
 
     private fun saveToPreferences(key: String, value: String) {
         try {

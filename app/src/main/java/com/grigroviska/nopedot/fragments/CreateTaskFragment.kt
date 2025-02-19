@@ -9,6 +9,7 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import androidx.fragment.app.Fragment
 import android.view.View
@@ -125,93 +126,135 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
     }
 
     private fun processTask(task: Task?) {
-        task?.let {
+        task?.let { currentTask ->
             val newColor = color
 
             val dueDateText = contentBinding.dueDateValue.text.toString()
             val timeReminderText = contentBinding.timeReminderValue.text.toString()
 
+            val defaultDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val defaultTimeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+
+            val dueDateForDB = if (dueDateText.isNotEmpty()) {
+                try {
+                    val userDate = SimpleDateFormat(dateFormat, Locale.getDefault()).parse(dueDateText)
+                    defaultDateFormat.format(userDate!!)
+                } catch (e: Exception) {
+                    Log.e("DateParseError", "Failed to parse date", e)
+                    dueDateText // Kullanıcı formatı ayrıştırılamazsa orijinali kullan
+                }
+            } else {
+                ""
+            }
+
+            val timeReminderForDB = if (timeReminderText.isNotEmpty() && timeReminderText != "No") {
+                try {
+                    val userTime = SimpleDateFormat(if (hourFormat == "24 Hour") "HH:mm" else "hh:mm a", Locale.getDefault()).parse(timeReminderText)
+                    defaultTimeFormat.format(userTime!!)
+                } catch (e: Exception) {
+                    Log.e("TimeParseError", "Failed to parse time", e)
+                    timeReminderText // Kullanıcı formatı ayrıştırılamazsa orijinali kullan
+                }
+            } else {
+                "" // Hiç zaman hatırlatıcısı yoksa boş bırak
+            }
+
             val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val context = requireContext()
+
             val existingIntent = PendingIntent.getBroadcast(
                 context,
-                task.id.toInt(),
+                currentTask.id.toInt(),
                 Intent(context, AlarmReceiver::class.java),
                 PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
             )
 
             val selectedDate: Date? = if (dueDateText.isNotEmpty() && timeReminderText.isNotEmpty()) {
-                Task.parseDate(dueDateText)?.let { date ->
-                    Task.parseTime(timeReminderText)?.let { time ->
-                        Calendar.getInstance().apply {
-                            time.date = date.date
-                            time.month = date.month
-                            time.year = date.year
-                            time.hours = time.hours
-                            time.minutes = time.minutes
-                        }.time
+                try {
+                    Task.parseDate(dueDateText)?.let { date ->
+                        Task.parseTime(timeReminderText)?.let { time ->
+                            Calendar.getInstance().apply {
+                                set(Calendar.YEAR, date.year + 1900) // Java Calendar'da yıl 1900'den başlar
+                                set(Calendar.MONTH, date.month) // 0-tabanlı, bu yüzden değişiklik yok
+                                set(Calendar.DAY_OF_MONTH, date.date)
+                                set(Calendar.HOUR_OF_DAY, time.hours)
+                                set(Calendar.MINUTE, time.minutes)
+                            }.time
+                        }
                     }
+                } catch (e: Exception) {
+                    Log.e("DateTimeParseError", "Failed to parse date and time", e)
+                    null
                 }
             } else {
                 null
             }
 
-            if (existingIntent != null) {
-                alarmManager.cancel(existingIntent)
-            }
+            existingIntent?.let { alarmManager.cancel(it) }
 
             if (selectedDate != null && !isPastDate(selectedDate)) {
-                val calendar = Calendar.getInstance().apply {
-                    time = selectedDate
-                }
-
+                val calendar = Calendar.getInstance().apply { time = selectedDate }
                 val intent = Intent(context, AlarmReceiver::class.java).apply {
                     putExtra("TASK_NAME", contentBinding.etTitle.text.toString())
-                    putExtra("NOTIFICATION_ID", task.id)
+                    putExtra("NOTIFICATION_ID", currentTask.id)
                 }
 
                 val pendingIntent = PendingIntent.getBroadcast(
                     context,
-                    task.id.toInt(),
+                    currentTask.id.toInt(),
                     intent,
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
 
-                when (selectedRepeatOption) {
-                    "No" -> alarmManager.set(
-                        AlarmManager.RTC_WAKEUP,
-                        calendar.timeInMillis,
-                        pendingIntent
-                    )
-                    else -> {
-                        val repeatInterval = getRepeatInterval(selectedRepeatOption)
-                        if (repeatInterval > 0) {
-                            alarmManager.setRepeating(
-                                AlarmManager.RTC_WAKEUP,
-                                calendar.timeInMillis,
-                                repeatInterval,
-                                pendingIntent
-                            )
+                try {
+                    when (selectedRepeatOption) {
+                        "No" -> alarmManager.set(
+                            AlarmManager.RTC_WAKEUP,
+                            calendar.timeInMillis,
+                            pendingIntent
+                        )
+                        else -> {
+                            val repeatInterval = getRepeatInterval(selectedRepeatOption)
+                            if (repeatInterval > 0) {
+                                alarmManager.setRepeating(
+                                    AlarmManager.RTC_WAKEUP,
+                                    calendar.timeInMillis,
+                                    repeatInterval,
+                                    pendingIntent
+                                )
+                            }
                         }
                     }
+                } catch (e: Exception) {
+                    Log.e("AlarmSetError", "Failed to set alarm", e)
+                    Toast.makeText(context, "Failed to set alarm", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            taskActivityViewModel.updateTask(
-                Task(
-                    it.id,
-                    contentBinding.etTitle.text.toString(),
-                    false,
-                    getOpenedEditTexts(),
-                    contentBinding.category.text.toString(),
-                    dueDateText,
-                    timeReminderText,
-                    selectedRepeatOption,
-                    newColor
+            try {
+                taskActivityViewModel.updateTask(
+                    Task(
+                        currentTask.id,
+                        contentBinding.etTitle.text.toString(),
+                        false,
+                        getOpenedEditTexts(),
+                        contentBinding.category.text.toString(),
+                        dueDateForDB,
+                        timeReminderForDB,
+                        selectedRepeatOption,
+                        newColor
+                    )
                 )
-            )
+            } catch (e: Exception) {
+                Log.e("TaskUpdateError", "Failed to update task", e)
+                Toast.makeText(context, "Failed to update task", Toast.LENGTH_SHORT).show()
+            }
 
             requireView().hideKeyboard()
             navController.popBackStack()
+        } ?: run {
+            Log.e("TaskError", "Task is null")
+            Toast.makeText(requireContext(), "Task is null, cannot process", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -354,32 +397,41 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
                 etTitle.setTextColor(currentTask.color)
                 color = currentTask.color
             }
-            date.text = formatDueDate(currentTask.dueDate)
+            if (currentTask.dueDate.isNotEmpty()) {
+                val storedDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) // Veritabanında nasıl saklandığı varsayımı
+                val userDateFormatter = SimpleDateFormat(dateFormat, Locale.getDefault())
 
-            val parsedDate = DateUtils.parseDate(currentTask.dueDate, dateFormat)
-            if (parsedDate != null) {
-                date.text = DateUtils.formatDate(parsedDate, dateFormat)
+                try {
+                    val dateToParse = storedDateFormat.parse(currentTask.dueDate)
+                    date.text = userDateFormatter.format(dateToParse!!)
+                } catch (e: Exception) {
+                    // Eğer format uyuşmazlığı varsa, orijinal değeri kullan
+                    date.text = currentTask.dueDate
+                }
             }
-            timeReminder.setText(currentTask.timeReminder)
+
+            if (currentTask.timeReminder.isNotEmpty()) {
+                // Saat formatını belirliyoruz
+                val is24HourFormat = hourFormat == "24 Hour"
+                val timeFormat = if (is24HourFormat) "HH:mm" else "hh:mm a"
+                val timeFormatter = SimpleDateFormat(timeFormat, Locale.getDefault())
+
+                try {
+                    // Veritabanından gelen saati 24 saatlik formatta alıyoruz ve ardından kullanıcı formatına dönüştürüyoruz
+                    val timeToParse = SimpleDateFormat("HH:mm", Locale.getDefault()).parse(currentTask.timeReminder)
+                    timeReminder.text = timeFormatter.format(timeToParse!!)
+                } catch (e: Exception) {
+                    // Eğer format uyumsuzluğu varsa, orijinal değeri kullan
+                    timeReminder.text = currentTask.timeReminder
+                }
+            }
+
             repeatTask.setText(currentTask.repeatTask)
 
             val subItems = currentTask.subItems
             for (subItem in subItems) {
                 addSubTaskEditText(subItem)
             }
-        }
-    }
-
-    private fun formatDueDate(dueDate: String): String {
-        val sharedPreferences = requireActivity().getSharedPreferences("NopeDotSettings", Context.MODE_PRIVATE)
-        val dateFormat = sharedPreferences.getString("dateFormat", "dd/MM/yyyy") ?: "dd/MM/yyyy"
-
-        return try {
-            val parsedDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(dueDate)  // Veritabanından gelen tarih formatı
-            SimpleDateFormat(dateFormat, Locale.getDefault()).format(parsedDate)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            dueDate
         }
     }
 
@@ -401,25 +453,6 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
         alert.show()
     }
 
-    object DateUtils {
-
-        fun parseDate(dateString: String, format: String = "yyyy-MM-dd"): Date? {
-            return try {
-                val sdf = SimpleDateFormat(format, Locale.getDefault())
-                sdf.parse(dateString)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                null
-            }
-        }
-
-        fun formatDate(date: Date, format: String): String {
-            val sdf = SimpleDateFormat(format, Locale.getDefault())
-            return sdf.format(date)
-        }
-    }
-
-
     private fun showDatePickerDialog() {
         val currentDate = Calendar.getInstance()
         val year = currentDate.get(Calendar.YEAR)
@@ -433,7 +466,9 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
 
         if (currentDueDate.isNotEmpty()) {
             try {
-                val date = Task.parseDate(currentDueDate)
+                // Kullanıcı tercihine göre tarihi ayrıştır
+                val dateFormatParser = SimpleDateFormat(dateFormat, Locale.getDefault())
+                val date = dateFormatParser.parse(currentDueDate)
                 val calendar = Calendar.getInstance()
                 calendar.time = date!!
                 selectedYear = calendar.get(Calendar.YEAR)
@@ -449,7 +484,9 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
             { _, year, month, dayOfMonth ->
                 val selectedCalendar = Calendar.getInstance()
                 selectedCalendar.set(year, month, dayOfMonth)
-                val formattedDate = Task.formatDate(selectedCalendar.time)
+
+                // Kullanıcı tercihine göre tarihi formatla
+                val formattedDate = SimpleDateFormat(dateFormat, Locale.getDefault()).format(selectedCalendar.time)
                 contentBinding.dueDateValue.text = formattedDate
             },
             selectedYear,
@@ -471,23 +508,34 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
 
     private fun showTimePickerDialog() {
         val calendar = Calendar.getInstance()
-        val is24HourFormat = hourFormat == "24 Hour"
 
+        // SharedPreferences veya global değişken ile saat formatını al
+        val sharedPreferences = requireActivity().getSharedPreferences("NopeDotSettings", Context.MODE_PRIVATE)
+        val savedTimeFormat = sharedPreferences.getString("timeFormat", "24 Hour") // Varsayılan değer 24 Hour
+
+        val is24HourFormat = savedTimeFormat == "24 Hour" // 12 Hour veya 24 Hour kontrolü
+
+        // TimePickerDialog oluşturuluyor
         val timePickerDialog = TimePickerDialog(
             requireContext(),
             { _, hourOfDay, minute ->
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 calendar.set(Calendar.MINUTE, minute)
+
+                // Saat formatına göre zaman formatını belirliyoruz
                 val timeFormat = if (is24HourFormat) "HH:mm" else "hh:mm a"
+
+                // Zamanı uygun formatta gösteriyoruz
                 contentBinding.timeReminderValue.text = SimpleDateFormat(timeFormat, Locale.getDefault()).format(calendar.time)
             },
             calendar.get(Calendar.HOUR_OF_DAY),
             calendar.get(Calendar.MINUTE),
-            is24HourFormat
+            is24HourFormat // Seçilen formata göre saat formatı
         )
 
         timePickerDialog.show()
     }
+
 
 
     private fun getOpenedEditTexts(): MutableList<String> {
@@ -536,6 +584,7 @@ class CreateTaskFragment : Fragment(R.layout.fragment_create_task) {
                 } else {
                     val newCategory = Category(0, newCategoryName)
                     categoryActivityViewModel.saveCategory(newCategory)
+                    contentBinding.category.text = newCategoryName
                     dialog.dismiss()
                 }
             } else {

@@ -139,6 +139,10 @@ class TaskFeedFragment : Fragment(), TaskItemClickListener {
         dialog = BottomSheetDialog(requireContext(), R.style.DialogStyle)
         dialog.setContentView(dialogView)
 
+        val sharedPreferences = requireActivity().getSharedPreferences("NopeDotSettings", Context.MODE_PRIVATE)
+        val firstDayOfWeek = sharedPreferences.getString("firstDayOfWeek", "Sunday") ?: "Sunday"
+
+
         val branchImageView = dialogView.findViewById<ImageView>(R.id.branch)
         val calendarImageView : ImageView = dialogView.findViewById(R.id.calendar)
         val save : MaterialButton = dialogView.findViewById(R.id.saveTask)
@@ -205,17 +209,22 @@ class TaskFeedFragment : Fragment(), TaskItemClickListener {
             val hour = if (selectedLastTime.isNotEmpty()) {
                 selectedLastTime.split(":")[0].toInt()
             } else {
-                currentDate.get(Calendar.HOUR_OF_DAY)
+                currentDate.get(Calendar.HOUR_OF_DAY) // Şu anki saat kullanılmalı
             }
             val minute = if (selectedLastTime.isNotEmpty()) {
                 selectedLastTime.split(":")[1].toInt()
             } else {
-                currentDate.get(Calendar.MINUTE)
+                currentDate.get(Calendar.MINUTE) // Şu anki dakika kullanılmalı
             }
 
             val datePickerDialog = DatePickerDialog(requireContext(), { _, selectedYear, selectedMonth, selectedDay ->
                 val selectedDate = Calendar.getInstance()
                 selectedDate.set(selectedYear, selectedMonth, selectedDay)
+
+                // TimePickerDialog oluşturulurken mevcut zamanı kullan
+                val currentTime = Calendar.getInstance()
+                val currentHour = currentTime.get(Calendar.HOUR_OF_DAY)
+                val currentMinute = currentTime.get(Calendar.MINUTE)
 
                 val timePickerDialog = TimePickerDialog(requireContext(), { _, selectedHour, selectedMinute ->
                     selectedDate.set(Calendar.HOUR_OF_DAY, selectedHour)
@@ -227,13 +236,23 @@ class TaskFeedFragment : Fragment(), TaskItemClickListener {
                     selectedLastDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(selectedDate.time).toString()
                     selectedLastTime = String.format("%02d:%02d", selectedHour, selectedMinute)
 
-                }, hour, minute, true)
+                }, currentHour, currentMinute, true)
 
                 timePickerDialog.show()
             }, year, month, day)
 
+            // Haftanın ilk gününü ayarla
+            datePickerDialog.setOnShowListener {
+                val datePicker = datePickerDialog.datePicker
+                when (firstDayOfWeek) {
+                    "Monday" -> datePicker.firstDayOfWeek = Calendar.MONDAY
+                    "Saturday" -> datePicker.firstDayOfWeek = Calendar.SATURDAY
+                    else -> datePicker.firstDayOfWeek = Calendar.SUNDAY // Varsayılan olarak Pazar
+                }
+            }
+
             datePickerDialog.setOnCancelListener {
-                selectedLastDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(currentDate.time).toString()
+                selectedLastTime = ""
             }
 
             datePickerDialog.show()

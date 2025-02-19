@@ -22,12 +22,6 @@
         android:layout_below="@id/firstDayFormat">
 
         <RadioButton
-            android:id="@+id/systemDefault"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/system_default" />
-
-        <RadioButton
             android:id="@+id/monday"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

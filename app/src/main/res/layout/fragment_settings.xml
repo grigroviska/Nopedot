@@ -334,54 +334,6 @@
                     </RelativeLayout>
 
                     <RelativeLayout
-                        android:id="@+id/translateLayout"
-                        android:layout_marginTop="10dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <ImageView
-                            android:id="@+id/translateIcon"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:padding="7dp"/>
-
-                        <TextView
-                            android:layout_marginStart="20dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:text="@string/help_us_translate"
-                            android:textColor="#FFF"
-                            android:textStyle="bold"
-                            android:layout_toEndOf="@+id/translateIcon" />
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:id="@+id/faqLayout"
-                        android:layout_marginTop="10dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <ImageView
-                            android:id="@+id/faqIcon"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:padding="7dp"/>
-
-                        <TextView
-                            android:layout_marginStart="20dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:text="@string/faq"
-                            android:textColor="#FFF"
-                            android:textStyle="bold"
-                            android:layout_toEndOf="@+id/faqIcon" />
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
                         android:id="@+id/rateUsLayout"
                         android:layout_marginTop="10dp"
                         android:layout_width="match_parent"
@@ -452,30 +404,6 @@
                             android:textStyle="bold"
                             android:layout_toEndOf="@+id/feedbackIcon"
                             />
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:id="@+id/privacyPolicyLayout"
-                        android:layout_marginTop="10dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <ImageView
-                            android:id="@+id/privacyPolicyIcon"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:padding="7dp"/>
-
-                        <TextView
-                            android:layout_marginStart="20dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:text="@string/privacy_policy"
-                            android:textColor="#FFF"
-                            android:textStyle="bold"
-                            android:layout_toEndOf="@+id/privacyPolicyIcon" />
 
                     </RelativeLayout>
 
