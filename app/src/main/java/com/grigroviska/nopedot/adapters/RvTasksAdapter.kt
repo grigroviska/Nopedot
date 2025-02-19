@@ -36,6 +36,14 @@ class RvTasksAdapter(
                     taskCheckBox.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
                 }
 
+                // Veritabanından gelen renk ile başlık rengini güncelle
+                val titleColor = if (task.color != -1) { // -1 varsayılan olarak "renk yok" anlamında
+                    task.color
+                } else {
+                    ContextCompat.getColor(root.context, R.color.white) // Varsayılan renk
+                }
+                taskCheckBox.setTextColor(titleColor)
+
                 // Tarih bilgisi
                 day.text = task.day
                 month.text = getMonthName(task.month.toInt())
